@@ -18,7 +18,7 @@
   ],
   "node-red"     : {
      "nodes": {
-        "das dbcollection": "das_dbCollection.js"
+        "das db collection": "das_db_collection.js"
      }
   },
 }
