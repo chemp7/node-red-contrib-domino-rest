@@ -1,0 +1,22 @@
+{
+  "name": "node-red-contrib-domino-rest",
+  "version": "0.0.1",
+  "description": "This collection of Node-RED nodes is for Domino Data Services in Domino Access Services.",
+  "author": "Takeshi Yoshida",
+  "license": "MIT",
+  "keywords": [
+    "node-red",
+    "domino"
+  ],
+  "node-red": {
+     "nodes": {
+        "das db collection": "dbcollection.js",
+        "das doc": "doc.js",
+        "das doc collection": "doccollection.js",
+        "das view collection": "viewcollection.js",
+        "das view design": "viewdesign.js",
+        "das view entries": "viewentries.js",
+        "das view entry": "viewentry.js"
+     }
+  }
+}

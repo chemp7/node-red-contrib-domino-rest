@@ -14,7 +14,12 @@
  * limitations under the License.
  **/
 /**
-	This added support to "Domino REST-API".
+	Copyright (c) 2016 Takeshi Yoshida
+	Released under the MIT license
+	https://opensource.org/licenses/mit-license.php
+
+	This program has been created on the basis of the "http request node".
+	Added support for "Domino Access Services".
 **/
 
 module.exports = function(RED) {
@@ -53,10 +58,10 @@ module.exports = function(RED) {
             node.status({fill:"blue",shape:"dot",text:"httpin.status.requesting"});
             var method = nodeMethod.toUpperCase() || "GET";
            
-           var host = nodeHost || msg.host;
+            var host = nodeHost || ((typeof msg.host === "undefined") ? "" : msg.host);
 
             // Domino REST API URL
-            var url = setSlash( host ) + "api/data/";
+            var url = encodeURI(setSlash( host ) + "api/data/");
 			log("url", url);	//debug
 
             if (msg.url && nodeUrl && (nodeUrl !== msg.url)) {  // revert change below when warning is finally removed

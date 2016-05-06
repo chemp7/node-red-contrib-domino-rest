@@ -14,13 +14,41 @@
   limitations under the License.
 -->
 <!--
-	This added support to "Domino REST-API".
+	Copyright (c) 2016 Takeshi Yoshida
+	Released under the MIT license
+	https://opensource.org/licenses/mit-license.php
+
+	This program has been created on the basis of the "http request node".
+	Added support for "Domino Access Services".
 -->
-<script type="text/x-red" data-template-name="database collection">
+
+<script type="text/x-red" data-template-name="view design">
     <div class="form-row">
 	    <label for="node-input-host"><i class="fa fa-server"></i> Host</label>
-        <input type="text" id="node-input-host" placeholder="ex. http://mydominoserver.co.jp">
+        <input type="text" id="node-input-host" placeholder="e.g. http://mydominoserver.co.jp">
     </div>
+    <div class="form-row">
+	    <label for="node-input-database"><i class="fa fa-database"></i> Database</label>
+        <input type="text" id="node-input-database" placeholder="e.g. mail/admin.nsf">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-access"><i class="fa fa-folder"></i> How to Access</label>
+        <select type="text" id="node-input-access" style="width:72%;">
+        <option value="use">- set by msg.access -</option>
+        <option value="name">name</option>
+        <option value="unid">unid</option>
+        </select>
+    </div>
+    <div class="form-row" id="node-prop-row-name">
+	    <label for="node-input-viewname"><i class="fa fa-folder-o"></i> View name</label>
+        <input type="text" id="node-input-viewname" placeholder="e.g. AuthorView">
+    </div>
+    <div class="form-row" id="node-prop-row-unid">
+	    <label for="node-input-viewunid"><i class="fa fa-folder-o"></i> View unid</label>
+        <input type="text" id="node-input-viewunid" placeholder="e.g. 10D5D34F073B8F0849257FA40041EF5C">
+    </div>
+
     <div class="form-row">
         <label>&nbsp;</label>
         <input type="checkbox" id="node-input-useAuth" style="display: inline-block; width: auto; vertical-align: top;">
@@ -41,11 +69,15 @@
     <div class="form-tips" id="tip-json" hidden><span data-i18n="httpin.tip.req"></span></div>
 </script>
 
-<script type="text/x-red" data-help-name="database collection">
-    <p>Gets information about the databases on a Domino server.</p>
+<script type="text/x-red" data-help-name="view design">
+    <p>Gets information on the columns in a view or folder.</p>
     <p>Provides a node for making http requests.(Domino REST API)</p>
     <ul>
-        <li><code>host</code> is the domino server</li>
+        <li><code>host</code> is the domino server.</li>
+        <li><code>database</code>, Path name of a database on the server. (e.g. mail/admin.nsf)</li>
+        <li><code>access</code>, how to access to the view. (name or unid)</li>
+        <li><code>name</code>, Name or alias of a view or folder in the database.</li>
+        <li><code>unid</code>, Universal ID of a view or folder in the database.</li>
     </ul>
     The output message contains the following properties:
     <ul>
@@ -56,7 +88,7 @@
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('database collection',{
+    RED.nodes.registerType('view design',{
         category: 'domino',
         color:"rgb(12, 154, 190)",
         defaults: {
@@ -65,6 +97,10 @@
 //            ret: {value:"obj"},
 //            url:{value:""},
             host:{value:""},
+            database:{value:""},
+            access:{value:"use"},
+            viewname:{value:""},
+            viewunid:{value:""},
             //user -> credentials
             //pass -> credentials
         },
@@ -74,11 +110,9 @@
         },
         inputs:1,
         outputs:1,
-//        icon: "white-globe.png",
 		icon: "domino.png",
         label: function() {
-//            return this.name||this._("httpin.httpreq");
-            return this.name||"database collection";
+            return this.name||"view design";
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
@@ -101,12 +135,27 @@
                     $('#node-input-password').val('');
                 }
             });
+            
+            $("#node-input-access").change(function() {
+	            var v = $("#node-input-access option:selected").val();
+	            console.log(v);
+	            if (v === "name") {
+	                $("#node-prop-row-name").show();
+	                $("#node-input-viewname").focus();
 
-            $("#node-input-ret").change(function() {
-                if ($("#node-input-ret").val() === "obj") {
-                    $("#tip-json").show();
-                } else {
-                    $("#tip-json").hide();
+	                $("#node-input-viewunid").val("");	//remove value
+	                $("#node-prop-row-unid").hide();
+                } else if (v === "unid") {
+	                $("#node-prop-row-unid").show();
+	                $("#node-input-viewunid").focus();
+
+	                $("#node-input-viewname").val("");	//remove value
+	                $("#node-prop-row-name").hide();
+                } else if (v === "use") {
+	                $("#node-input-viewname").val("");	//remove value
+	                $("#node-input-viewunid").val("");	//remove value
+	                $("#node-prop-row-name").hide();
+	                $("#node-prop-row-unid").hide();
                 }
             });
         }

@@ -1,0 +1,199 @@
+<!--
+  Copyright 2013, 2015 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!--
+	Copyright (c) 2016 Takeshi Yoshida
+	Released under the MIT license
+	https://opensource.org/licenses/mit-license.php
+
+	This program has been created on the basis of the "http request node".
+	Added support for "Domino Access Services".
+-->
+
+<script type="text/x-red" data-template-name="document collection">
+    <div class="form-row">
+        <label for="node-input-method"><i class="fa fa-tasks"></i> <span data-i18n="httpin.label.method"></span></label>
+        <select type="text" id="node-input-method" style="width:72%;">
+        <option value="GET">GET</option>
+        <option value="POST">POST</option>
+        </select>
+    </div>
+    
+    <div class="form-row">
+	    <label for="node-input-host"><i class="fa fa-server"></i> Host</label>
+        <input type="text" id="node-input-host" placeholder="e.g. http://mydominoserver.co.jp">
+    </div>
+    <div class="form-row">
+	    <label for="node-input-database"><i class="fa fa-database"></i> Database</label>
+        <input type="text" id="node-input-database" placeholder="e.g. mail/admin.nsf">
+    </div>
+    
+    <div class="form-row" id="node-prop-row-get">
+	    <label for="node-input-get-search"><i class="fa fa-search"></i> Search</label>
+        <input type="text" id="node-input-get-search" placeholder="search keyword">
+   		<br/>
+   		<br/>
+	    <label for="node-input-get-searchmaxdocs"><i class="fa fa-files-o"></i> Max docs</label>
+        <input type="text" id="node-input-get-searchmaxdocs" placeholder="10">
+   		<br/>
+   		<br/>
+	    <label for="node-input-get-since"><i class="fa fa-calendar"></i> Since</label>
+        <input type="text" id="node-input-get-since" placeholder="e.g. 2016-05-21T01:02:03Z">
+    </div>
+    <div class="form-row" id="node-prop-row-post">
+        <label for="node-input-post-computewithform"><i class="fa fa-calculator"></i> Compute WithForm</label>
+        <select type="text" id="node-input-post-computewithform" style="width:72%;">
+        <option value="use">- set by msg.computewithform -</option>
+       	<option value="false">false</option>
+       	<option value="true">true</option>
+		</select>
+   		<br/>
+   		<br/>
+	    <label for="node-input-post-form"><i class="fa fa-file-text-o"></i> form</label>
+   	    <input type="text" id="node-input-post-form" placeholder="e.g. MainTopic">
+   		<br/>
+   		<br/>
+	    <label for="node-input-post-parentid"><i class="fa fa-link"></i> parentid</label>
+   	    <input type="text" id="node-input-post-parentid" placeholder="e.g. 6D971EDB3188CEDD49257FA40024524A">
+    </div>
+    
+    <div class="form-row">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-useAuth" style="display: inline-block; width: auto; vertical-align: top;">
+        <label for="node-input-useAuth" style="width: 70%;"><span data-i18n="httpin.basicauth"></span></label>
+    </div>
+    <div class="form-row node-input-useAuth-row">
+        <label for="node-input-user"><i class="fa fa-user"></i> <span data-i18n="common.label.username"></span></label>
+        <input type="text" id="node-input-user">
+    </div>
+    <div class="form-row node-input-useAuth-row">
+        <label for="node-input-password"><i class="fa fa-lock"></i> <span data-i18n="common.label.password"></span></label>
+        <input type="password" id="node-input-password">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="common.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]common.label.name">
+    </div>
+    <div class="form-tips" id="tip-json" hidden><span data-i18n="httpin.tip.req"></span></div>
+</script>
+
+<script type="text/x-red" data-help-name="document collection">
+    <p>Documents in a database.</p>
+    <p>Provides a node for making http requests.(Domino REST API)</p>
+    <ul>
+        <ul>
+	        <li><code>GET</code>, Gets information on the documents in a database.</li>
+    	    <li><code>POST</code>, Adds a document to a database.</li>
+    	</ul>
+        <li><code>host</code> is the domino server.</li>
+        <li><code>database</code>, Path name of a database on the server. (e.g. mail/admin.nsf)</li>
+        <li>Method: GET</li>
+        <ul>
+	        <li><code>search</code>, Returns only documents that match a search query.</li>
+	        <li><code>searchmaxdocs</code>, Limits the number of documents returned by a full-text search.</li>
+	        <li><code>since</code>, Returns only entries modified since a specified time. (e.g. 2016-05-21T01:02:03Z)</li>
+        </ul>
+        <li>Method: POST</li>
+        <ul>
+	        <li><code>computewithform</code>, When true, runs the Domino form formulas against the request data before posting the data. You must identify the form. (true or false)</li>
+	        <li><code>form</code>, Associates a Domino form with the document.</li>
+	        <li><code>parentid</code>, Adds the document as a response to the document specified by the parent UNID.</li>
+	    </ul>
+    </ul>
+    The output message contains the following properties:
+    <ul>
+        <li><code>payload</code> is the body of the response</li>
+        <li><code>statusCode</code> is the status code of the response, or the error code if the request could not be completed</li>
+        <li><code>headers</code> is an object containing the response headers</li>
+    </ul>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('document collection',{
+        category: 'domino',
+        color:"rgb(12, 154, 190)",
+        defaults: {
+            name: {value:""},
+            method:{value:"GET"},
+//            ret: {value:"obj"},
+//            url:{value:""},
+            host:{value:""},
+            database:{value:""},
+            search:{value:""},
+            searchmaxdocs:{value:""},
+            since:{value:""},
+            computewithform:{value:"use"},
+            form:{value:""},
+            parentid:{value:""},
+            //user -> credentials
+            //pass -> credentials
+        },
+        credentials: {
+            user: {type:"text"},
+            password: {type: "password"}
+        },
+        inputs:1,
+        outputs:1,
+//        icon: "white-globe.png",
+		icon: "domino.png",
+        label: function() {
+//            return this.name||this._("httpin.httpreq");
+            return this.name||"document collection";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            if (this.credentials.user || this.credentials.has_password) {
+                $('#node-input-useAuth').prop('checked', true);
+                $(".node-input-useAuth-row").show();
+            } else {
+                $('#node-input-useAuth').prop('checked', false);
+                $(".node-input-useAuth-row").hide();
+            }
+
+            $("#node-input-useAuth").change(function() {
+                if ($(this).is(":checked")) {
+                    $(".node-input-useAuth-row").show();
+                } else {
+                    $(".node-input-useAuth-row").hide();
+                    $('#node-input-user').val('');
+                    $('#node-input-password').val('');
+                }
+            });
+
+            $("#node-input-method").change(function() {
+	            var v = $("#node-input-method option:selected").val();
+	            if (v === "GET") {
+	                $("#node-prop-row-get").show();
+	                $("#node-input-get-search").focus();
+
+	                $("#node-input-post-computewithform").val("use");
+	                $("#node-input-post-form").val("");		//remove value
+	                $("#node-input-post-parentid").val("");		//remove value
+	                $("#node-prop-row-post").hide();
+                } else if (v === "POST") {
+	                $("#node-prop-row-post").show();
+	                $("#node-input-post-computewithform").focus();
+
+	                $("#node-input-get-search").val("");	//remove value
+	                $("#node-input-get-searchmaxdocs").val("");	//remove value
+	                $("#node-input-get-since").val("");	//remove value
+	                $("#node-prop-row-get").hide();
+                }
+            });
+        }
+    });
+</script>

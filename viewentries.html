@@ -1,0 +1,464 @@
+<!--
+  Copyright 2013, 2015 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!--
+	Copyright (c) 2016 Takeshi Yoshida
+	Released under the MIT license
+	https://opensource.org/licenses/mit-license.php
+
+	This program has been created on the basis of the "http request node".
+	Added support for "Domino Access Services".
+-->
+
+<script type="text/x-red" data-template-name="view entries">
+    <div class="form-row">
+        <label for="node-input-method"><i class="fa fa-tasks"></i> <span data-i18n="httpin.label.method"></span></label>
+        <select type="text" id="node-input-method" style="width:72%;">
+	        <option value="GET">GET</option>
+	        <option value="POST">POST</option>
+	        <option value="PUT">PUT</option>
+        </select>
+    </div>
+
+    <div class="form-row">
+	    <label for="node-input-host"><i class="fa fa-server"></i> Host</label>
+        <input type="text" id="node-input-host" placeholder="e.g. http://mydominoserver.co.jp">
+    </div>
+    <div class="form-row">
+	    <label for="node-input-database"><i class="fa fa-database"></i> Database</label>
+        <input type="text" id="node-input-database" placeholder="e.g. mail/admin.nsf">
+    </div>
+    
+    <div class="form-row">
+        <label for="node-input-access" style="width:140px"><i class="fa fa-folder"></i> How to Access</label>
+        <select type="text" id="node-input-access" style="width:64%;">
+	        <option value="use">- set by msg.access -</option>
+	        <option value="name">name</option>
+	        <option value="unid">unid</option>
+        </select>
+    </div>
+    <div class="form-row" id="node-prop-row-name">
+	    <label for="node-input-viewname"><i class="fa fa-folder-o"></i> View name</label>
+        <input type="text" id="node-input-viewname" placeholder="e.g. AuthorView">
+    </div>
+    <div class="form-row" id="node-prop-row-unid">
+	    <label for="node-input-viewunid"><i class="fa fa-folder-o"></i> View unid</label>
+        <input type="text" id="node-input-viewunid" placeholder="e.g. 10D5D34F073B8F0849257FA40041EF5C">
+    </div>
+
+	<!-- -------------------------------------------  GET -------------------------------------------------------------- -->
+    <div class="node-prop-row-get">
+		<!-- ---------------------------------------------  param1 ----------------------------------------------------- -->
+	    <div class="form-row node-prop-row-get">
+	        <label>&nbsp;</label>
+	        <input type="checkbox" id="node-input-getckb1" style="display: inline-block; width: auto; vertical-align: top;">
+	        <label for="node-input-getckb1" style="width: 70%;">Parameters: search, page</label>
+	        <input type="hidden" id="node-input-getparam1" placeholder="expand or collapse">
+	    </div>
+	    <div class="form-row node-prop-row-getparam1">
+		    <label for="node-input-search"><i class="fa fa-search"></i> search</label>
+	        <input type="text" id="node-input-search" placeholder="search keyword">
+	    </div>
+	    <div class="form-row node-prop-row-getparam1">
+		    <span> searchmaxdocs</span>
+	        <input type="text" id="node-input-searchmaxdocs" placeholder="10" style="width:30px;">
+		    <span> start</span>
+	        <input type="text" id="node-input-start" placeholder="0" style="width:30px">
+		    <span> count</span>
+	        <input type="text" id="node-input-count" placeholder="10" style="width:30px">
+		    <span> si</span>
+	        <input type="text" id="node-input-si" placeholder="0" style="width:30px">
+		    <span> ps</span>
+	        <input type="text" id="node-input-ps" placeholder="10" style="width:30px">
+		    <span> page</span>
+	        <input type="text" id="node-input-page" placeholder="0" style="width:30px">
+	    </div>
+		</div>
+		<!-- ---------------------------------------------  param2 ----------------------------------------------------- -->
+	    <div class="form-row node-prop-row-get">
+	        <label>&nbsp;</label>
+	        <input type="checkbox" id="node-input-getckb2" style="display: inline-block; width: auto; vertical-align: top;">
+	        <label for="node-input-getckb2" style="width: 70%;">Parameters: sort, keys</label>
+	        <input type="hidden" id="node-input-getparam2" placeholder="expand or collapse">
+	    </div>
+	    <div class="form-row node-prop-row-getparam2">
+		    <label for="node-input-sortcolumn"><i class="fa fa-columns"></i> sortcolumn</label>
+	        <input type="text" id="node-input-sortcolumn" placeholder="e.g. Title">
+	    </div>
+	    <div class="form-row node-prop-row-getparam2">
+		    <label for="node-input-sortorder"><i class="fa fa-sort"></i> sortorder</label>
+	        <select type="text" id="node-input-sortorder" style="width:72%;">
+		        <option value="use">- set by msg.sortorder -</option>
+		       	<option value="ascending">ascending</option>
+		       	<option value="descending">descending</option>
+			</select>
+	    </div>
+	    <div class="form-row node-prop-row-getparam2">
+		    <label for="node-input-startkeys"><i class="fa fa-long-arrow-down"></i> startkeys</label>
+	        <input type="text" id="node-input-startkeys" placeholder="this parameter is pair with sortcolumn.">
+	    </div>
+	    <div class="form-row node-prop-row-getparam2">
+		    <label for="node-input-keys"><i class="fa fa-search-plus"></i> keys</label>
+	        <input type="text" id="node-input-keys" placeholder="keys is compared to a sorted column in the view.">
+	    </div>
+	    <div class="form-row node-prop-row-getparam2">
+		    <label for="node-input-keysexactmatch" style="width:140px"><i class="fa fa-dot-circle-o"></i> keysexactmatch</label>
+	        <select type="text" id="node-input-keysexactmatch" style="width:64%;">
+		        <option value="use">- set by msg.keysexactmatch -</option>
+		       	<option value="false">false</option>
+		       	<option value="true">true</option>
+			</select>
+	    </div>
+		<!-- ---------------------------------------------  param3 ----------------------------------------------------- -->
+	    <div class="form-row node-prop-row-get">
+	        <label>&nbsp;</label>
+	        <input type="checkbox" id="node-input-getckb3" style="display: inline-block; width: auto; vertical-align: top;">
+	        <label for="node-input-getckb3" style="width: 70%;">Parameters: expandlevel, category, etc.</label>
+	        <input type="hidden" id="node-input-getparam3" placeholder="expand or collapse">
+	    </div>
+	    <div class="form-row node-prop-row-getparam3">
+    	    <label for="node-input-expandlevel"><i class="fa fa-level-down"></i> expandlevel</label>
+	        <input type="text" id="node-input-expandlevel" placeholder="0" style="width:30px;">
+	        &nbsp;
+    	    <label for="node-input-systemcolumns" style="width:120px;"><i class="fa fa-info"></i> systemcolumns</label>
+	   	    <input type="text" id="node-input-systemcolumns" placeholder="e.g. 0x80a" style="width:130px;">
+	    </div>
+	    <div class="form-row node-prop-row-getparam3">
+		    <label for="node-input-category"><i class="fa fa-caret-square-o-right"></i> category</label>
+	        <input type="text" id="node-input-category" placeholder="Category value">
+	    </div>
+	</div>
+
+	<!-- -------------------------------------------  POST ------------------------------------------------------------- -->
+    <div class="form-row node-prop-row-post">
+        <label for="node-input-computewithform"><i class="fa fa-calculator"></i> Compute WithForm</label>
+        <select type="text" id="node-input-computewithform" style="width:72%;">
+	        <option value="use">- set by msg.computewithform -</option>
+	       	<option value="false">false</option>
+	       	<option value="true">true</option>
+		</select>
+	</div>
+    <div class="form-row node-prop-row-post">
+	    <label for="node-input-form"><i class="fa fa-file-text-o"></i> form</label>
+	    <input type="text" id="node-input-form" placeholder="e.g. MainTopic">
+	</div>
+    <div class="form-row node-prop-row-post node-prop-row-getparam3">
+	    <label for="node-input-parentid"><i class="fa fa-link"></i> parentid</label>
+   	    <input type="text" id="node-input-parentid" placeholder="e.g. 6D971EDB3188CEDD49257FA40024524A">
+    </div>
+
+
+    <div class="form-row">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-useAuth" style="display: inline-block; width: auto; vertical-align: top;">
+        <label for="node-input-useAuth" style="width: 70%;"><span data-i18n="httpin.basicauth"></span></label>
+    </div>
+    <div class="form-row node-input-useAuth-row">
+        <label for="node-input-user"><i class="fa fa-user"></i> <span data-i18n="common.label.username"></span></label>
+        <input type="text" id="node-input-user">
+    </div>
+    <div class="form-row node-input-useAuth-row">
+        <label for="node-input-password"><i class="fa fa-lock"></i> <span data-i18n="common.label.password"></span></label>
+        <input type="password" id="node-input-password">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="common.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]common.label.name">
+    </div>
+    <div class="form-tips" id="tip-json" hidden><span data-i18n="httpin.tip.req"></span></div>
+</script>
+
+<script type="text/x-red" data-help-name="view entries">
+    <p>Entries in a view or folder.</p>
+    <p>Provides a node for making http requests.(Domino REST API)</p>
+    <ul>
+        <ul>
+	        <li><code>GET</code>, Gets information on the entries in a view or folder.</li>
+    	    <li><code>POST</code>, Adds a document to a database limiting the content to that of the view/folder.</li>
+    	    <li><code>PUT</code>, Updates the contents of a folder.</li>
+    	</ul>
+        <li><code>host</code> is the domino server.</li>
+        <li><code>database</code>, Path name of a database on the server. (e.g. mail/admin.nsf)</li>
+        <li><code>access</code>, how to access to the view. (name or unid)</li>
+        <ul>
+	        <li><code>name</code>, Name or alias of a view or folder in the database.</li>
+    	    <li><code>unid</code>, Universal ID of a view or folder in the database.</li>
+    	</ul>
+        <li>Method: GET</li>
+        <ul>
+	        <li><code>search</code>, Returns only documents that match a search query.</li>
+	        <li><code>searchmaxdocs</code>, Limits the number of documents returned by a full-text search.</li>
+        </ul>
+        <li>Method: POST</li>
+        <ul>
+	        <li><code>computewithform</code>, When true, runs the Domino form formulas against the request data before posting the data. You must identify the form. (true or false)</li>
+	        <li><code>form</code>, Associates a Domino form with the document.</li>
+	        <li><code>parentid</code>, Adds the document as a response to the document specified by the parent UNID.</li>
+	    </ul>
+
+        <li><code>parentid</code>, Adds the document as a response to the document specified by the parent UNID.</li>
+    </ul>
+    The output message contains the following properties:
+    <ul>
+        <li><code>payload</code> is the body of the response</li>
+        <li><code>statusCode</code> is the status code of the response, or the error code if the request could not be completed</li>
+        <li><code>headers</code> is an object containing the response headers</li>
+    </ul>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('view entries',{
+        category: 'domino',
+        color:"rgb(12, 154, 190)",
+        defaults: {
+            name: {value:""},
+            method:{value:"GET"},
+//            ret: {value:"obj"},
+//            url:{value:""},
+            host:{value:""},
+            database:{value:""},
+            access:{value:"use"},
+            viewname:{value:""},
+            viewunid:{value:""},
+
+            search:{value:""},
+            searchmaxdocs:{value:""},
+            start:{value:""},
+            count:{value:""},
+            si:{value:""},
+            ps:{value:""},
+            page:{value:""},
+            sortcolumn:{value:""},
+            sortorder:{value:"use"},
+            startkeys:{value:""},
+            keys:{value:""},
+            keysexactmatch:{value:"use"},
+            expandlevel:{value:""},
+            category:{value:""},
+            systemcolumns:{value:""},
+
+            computewithform:{value:"use"},
+            form:{value:""},
+            parentid:{value:""},
+
+            getparam1:{value:"collapse"},
+            getparam2:{value:"collapse"},
+            getparam3:{value:"collapse"},
+            //user -> credentials
+            //pass -> credentials
+        },
+        credentials: {
+            user: {type:"text"},
+            password: {type: "password"}
+        },
+        inputs:1,
+        outputs:1,
+		icon: "domino.png",
+        label: function() {
+            return this.name||"view entries";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            if (this.credentials.user || this.credentials.has_password) {
+                $('#node-input-useAuth').prop('checked', true);
+                $(".node-input-useAuth-row").show();
+            } else {
+                $('#node-input-useAuth').prop('checked', false);
+                $(".node-input-useAuth-row").hide();
+            }
+
+            $("#node-input-useAuth").change(function() {
+                if ($(this).is(":checked")) {
+                    $(".node-input-useAuth-row").show();
+                } else {
+                    $(".node-input-useAuth-row").hide();
+                    $('#node-input-user').val('');
+                    $('#node-input-password').val('');
+                }
+            });
+
+            $("#node-input-method").change(function() {
+	            var v = $("#node-input-method option:selected").val();
+	            if (v === "GET") {
+            		resetParam(4);
+	                $(".node-prop-row-post").hide();
+	                $(".node-prop-row-get").show();
+	                $(".node-prop-row-get").show();
+					// parentid
+		            if ($("#node-input-getparam3").val() === "expand") {
+                		$(".node-prop-row-getparam3").show();
+                	}
+                } else if (v === "POST") {
+            		resetParam(1);
+            		resetParam(2);
+            		resetParam(3);
+	                $(".node-prop-row-get").hide();
+	                $(".node-prop-row-post").show();
+                } else if (v === "PUT") {
+            		resetParam(1);
+            		resetParam(2);
+            		resetParam(3);
+            		resetParam(4);
+	                $(".node-prop-row-post").hide();
+	                $(".node-prop-row-get").hide();
+                }
+            });
+
+            $("#node-input-access").change(function() {
+	            var v = $("#node-input-access option:selected").val();
+	            if (v === "name") {
+	                $("#node-prop-row-name").show();
+	                $("#node-input-viewname").focus();
+
+	                $("#node-input-viewunid").val("");	//remove value
+	                $("#node-prop-row-unid").hide();
+                } else if (v === "unid") {
+	                $("#node-prop-row-unid").show();
+	                $("#node-input-viewunid").focus();
+
+	                $("#node-input-viewname").val("");	//remove value
+	                $("#node-prop-row-name").hide();
+                } else if (v === "use") {
+	                $("#node-input-viewname").val("");	//remove value
+	                $("#node-input-viewunid").val("");	//remove value
+	                $("#node-prop-row-name").hide();
+	                $("#node-prop-row-unid").hide();
+                }
+            });
+
+            // change: get param 1
+            $("#node-input-getckb1").change(function() {
+                if ($(this).is(":checked")) {
+		            $("#node-input-getparam1").val("expand");
+                    $(".node-prop-row-getparam1").show();
+                } else {
+					resetParam(1);
+                    $(".node-prop-row-getparam1").hide();
+		            $("#node-input-getparam1").val("collapse");
+                }
+            });
+            // change: get param 2
+            $("#node-input-getckb2").change(function() {
+                if ($(this).is(":checked")) {
+		            $("#node-input-getparam2").val("expand");
+                    $(".node-prop-row-getparam2").show();
+                } else {
+					resetParam(2);
+                    $(".node-prop-row-getparam2").hide();
+		            $("#node-input-getparam2").val("collapse");
+                }
+            });
+            // change: get param 3
+            $("#node-input-getckb3").change(function() {
+                if ($(this).is(":checked")) {
+		            $("#node-input-getparam3").val("expand");
+                    $(".node-prop-row-getparam3").show();
+                } else {
+					resetParam(3);
+                    $(".node-prop-row-getparam3").hide();
+		            $("#node-input-getparam3").val("collapse");
+                }
+            });
+            
+            // get param 1
+            if ($("#node-input-getparam1").val() === "expand") {
+                $('#node-input-getckb1').prop('checked', true);
+                $(".node-prop-row-getparam1").show();
+            } else {
+                $('#node-input-getckb1').prop('checked', false);
+                $(".node-prop-row-getparam1").hide();
+            }
+            // get param 2
+            if ($("#node-input-getparam2").val() === "expand") {
+                $('#node-input-getckb2').prop('checked', true);
+                $(".node-prop-row-getparam2").show();
+            } else {
+                $('#node-input-getckb2').prop('checked', false);
+                $(".node-prop-row-getparam2").hide();
+            }
+            // get param 3
+            if ($("#node-input-getparam3").val() === "expand") {
+                $('#node-input-getckb3').prop('checked', true);
+                $(".node-prop-row-getparam3").show();
+            } else {
+                $('#node-input-getckb3').prop('checked', false)
+                $(".node-prop-row-getparam3").hide();
+            }
+            
+            function resetParam( target ) {
+            	// target	1-3	: Reset the items in the div of the "get" class.(e.g. ".node-prop-row-getparam1")
+            	//			4	: Reset the items in the div of the ".node-prop-row-post" class.
+	            var v = $("#node-input-method option:selected").val();
+            	if (target === 1) {
+	           		$("#node-input-getparam1").val("collapse");
+	                $('#node-input-getckb1').prop('checked', false);
+	                $(".node-prop-row-getparam1").hide();
+	                
+	                $("#node-input-search").val("");		//g1
+	                $("#node-input-searchmaxdocs").val("");	//g2
+	                $("#node-input-start").val("");			//g3
+	                $("#node-input-count").val("");			//g4
+	                $("#node-input-si").val("");			//g5
+	                $("#node-input-ps").val("");			//g6
+	                $("#node-input-page").val("");			//g7
+            	}
+            	if (target === 2) {
+					$("#node-input-getparam2").val("collapse");
+	                $('#node-input-getckb2').prop('checked', false);
+	                $(".node-prop-row-getparam2").hide();
+	                
+	                $("#node-input-sortcolumn").val("");	//g8
+	                $("#node-input-sortorder").val("use");	//g9
+	                $("#node-input-startkeys").val("");		//g10
+	                $("#node-input-keys").val("");			//g11
+	                $("#node-input-keysexactmatch").val("use");//g12
+            	}
+            	if (target === 3) {
+					$("#node-input-getparam3").val("collapse");
+	                $('#node-input-getckb3').prop('checked', false);
+	                $(".node-prop-row-getparam3").hide();
+	                
+	                $("#node-input-expandlevel").val("");	//g13
+	                $("#node-input-category").val("");		//g14
+					// parentid
+		            if (v === "GET" || v === "POST") {
+			            // Not reset
+		            } else {
+		                $("#node-input-parentid").val("");	//p3, g15
+		            }
+	                $("#node-input-systemcolumns").val("");	//g16
+            	}
+            	if (target === 4) {
+            		// POST
+					$("#node-input-computewithform").val("use");//p1
+	                $("#node-input-form").val("");				//p2
+	                
+					// parentid
+		            if (v === "GET" || v === "POST") {
+			            // Not reset
+			            if ($("#node-input-getparam3").val() === "collapse") {
+			                $("#node-input-parentid").val("");		//p3, g15
+                		}
+		            } else {
+		                $("#node-input-parentid").val("");		//p3, g15
+		            }
+            	}
+            }
+        }
+    });
+</script>
