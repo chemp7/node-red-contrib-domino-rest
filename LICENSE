@@ -23,7 +23,7 @@ THE SOFTWARE.
 MIT
 
 
-This package is created by modifying the httprequest Node.
+This package is created by modifying the http request Node.
 The httprequest Node has been included in the Node-RED.
 The httprequest Node is released under the Apache License Version 2.0.
 

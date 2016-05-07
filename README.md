@@ -9,7 +9,7 @@ This collection of Node-RED nodes is for Domino Data Services in Domino Access S
 IBM Domino Access Services are Web REST services that provide a standard way of accessing Domino resources over HTTP.
 With REST service, It is possible to read of the data on database, create, update, and delete.
 
-This package is created by modifying the httprequest Node.
+This package is created by modifying the http request Node.
 This packeage added support to Domino Data Service in Domino Access Services.
 It is possible to access easy to Domino Access Services by use by the node that is included in this package.
 
@@ -38,9 +38,6 @@ It is possible to access easy to Domino Access Services by use by the node that 
 
 **Note**
 
-* Query parameters of the following is not supported.
-  - compact
-  - strongtype
 * Overriding Method can not be. (Msg.method)
 
 
@@ -50,6 +47,7 @@ It is possible to access easy to Domino Access Services by use by the node that 
 
 ## Install
 
+        npm install -g node-red-contrib-domino-rest
 
 
 ## Licence

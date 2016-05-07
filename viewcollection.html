@@ -18,26 +18,35 @@
 	Released under the MIT license
 	https://opensource.org/licenses/mit-license.php
 
-	This program has been created on the basis of the "http request node".
+	This program has been created on the basis of the http request node.
 	Added support for "Domino Access Services".
+	This node tytpe is View/folder collection resource.
 -->
 
 <script type="text/x-red" data-template-name="view collection">
+    <div class="form-row">
+        <label for="node-input-method"><i class="fa fa-tasks"></i> <span data-i18n="httpin.label.method"></span></label>
+        <select type="text" id="node-input-method" style="width:72%;">
+        <option value="GET">GET</option>
+        </select>
+    </div>
+
     <div class="form-row">
 	    <label for="node-input-host"><i class="fa fa-server"></i> Host</label>
         <input type="text" id="node-input-host" placeholder="e.g. http://mydominoserver.co.jp">
     </div>
     
     <div class="form-row">
-        <label for="node-input-access"><i class="fa fa-folder"></i> How to Access</label>
-        <select type="text" id="node-input-access" style="width:72%;">
-        <option value="name">name</option>
-        <option value="unid">unid</option>
-        </select>
-    </div>
-    <div class="form-row">
 	    <label for="node-input-database"><i class="fa fa-database"></i> Database</label>
         <input type="text" id="node-input-database" placeholder="e.g. mail/admin.nsf">
+    </div>
+    <div class="form-row">
+        <label for="node-input-compact"><i class="fa fa-file-archive-o"></i> compact</label>
+        <select type="text" id="node-input-compact" style="width:72%;">
+	        <option value="use">- set by msg.compact -</option>
+	       	<option value="false">false</option>
+	       	<option value="true">true</option>
+        </select>
     </div>
 
     <div class="form-row">
@@ -62,15 +71,25 @@
 
 <script type="text/x-red" data-help-name="view collection">
     <p>Gets information about the views and folders in a database.</p>
-    <p>Provides a node for making http requests.(Domino REST API)</p>
+    <p>Provides a node for making http requests.(Domino Access Services)</p>
     <ul>
-        <li><code>host</code> is the domino server.</li>
+        <ul>
+	        <li><code>GET</code>, Gets information about the views and folders in a database.</li>
+    	</ul>
+        <li><code>host</code> is a domino server.</li>
         <li><code>database</code>, Path name of a database on the server. (e.g. mail/admin.nsf)</li>
+        <li>Query Parameters: GET</li>
+	    <ul>
+	        <li><code>compact</code> is controls compacting of the JSON output. Compacting removes extraneous white space. (Optional)</li>
+	    </ul>
     </ul>
     The output message contains the following properties:
     <ul>
         <li><code>payload</code> is the body of the response</li>
         <li><code>statusCode</code> is the status code of the response, or the error code if the request could not be completed</li>
+	    <ul>
+	        <li><code>200</code> OK. Indicates that the request was handled successfully.</li>
+	    </ul>
         <li><code>headers</code> is an object containing the response headers</li>
     </ul>
 </script>
@@ -81,11 +100,12 @@
         color:"rgb(12, 154, 190)",
         defaults: {
             name: {value:""},
-//            method:{value:"GET"},
+            method:{value:"GET"},
 //            ret: {value:"obj"},
 //            url:{value:""},
             host:{value:""},
             database:{value:""},
+            compact:{value:"use"}
             //user -> credentials
             //pass -> credentials
         },

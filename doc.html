@@ -18,8 +18,9 @@
 	Released under the MIT license
 	https://opensource.org/licenses/mit-license.php
 
-	This program has been created on the basis of the "http request node".
-	Added support for "Domino Access Services".
+	This program has been created on the basis of the http request node.
+	Added support for Domino Access Services.
+	This node tytpe is Document resource.
 -->
 
 <script type="text/x-red" data-template-name="document">
@@ -46,42 +47,58 @@
    	    <input type="text" id="node-input-docunid" placeholder="e.g. 6D971EDB3188CEDD49257FA40024524A">
     </div>
 
-    <div class="form-row" id="node-prop-row-get">
-        <label for="node-input-get-hidden"><i class="fa fa-calculator"></i> Hidden</label>
-        <select type="text" id="node-input-get-hidden" style="width:72%;">
+    <div class="form-row node-prop-row-get">
+        <label for="node-input-hidden"><i class="fa fa-file-excel-o"></i> hidden</label>
+        <select type="text" id="node-input-hidden" style="width:72%;">
 	        <option value="use">- set by msg.hidden -</option>
 	       	<option value="false">false</option>
 	       	<option value="true">true</option>
 		</select>
-   		<br/>
-   		<br/>
-        <label for="node-input-get-markread"><i class="fa fa-calculator"></i> Markread</label>
-        <select type="text" id="node-input-get-markread" style="width:72%;">
+    </div>
+    <div class="form-row node-prop-row-get">
+        <label for="node-input-markread"><i class="fa fa-bookmark-o"></i> markread</label>
+        <select type="text" id="node-input-markread" style="width:72%;">
 	        <option value="use">- set by msg.markread -</option>
 	       	<option value="false">false</option>
 	       	<option value="true">true</option>
 		</select>
-   		<br/>
-   		<br/>
-        <label for="node-input-get-multipart"><i class="fa fa-calculator"></i> Multipart</label>
-        <select type="text" id="node-input-get-multipart" style="width:72%;">
+    </div>
+    <div class="form-row node-prop-row-get">
+        <label for="node-input-multipart"><i class="fa fa-file-code-o"></i> multipart</label>
+        <select type="text" id="node-input-multipart" style="width:72%;">
 	        <option value="use">- set by msg.multipart -</option>
 	       	<option value="false">false</option>
 	       	<option value="true">true</option>
 		</select>
     </div>
+    <div class="form-row node-prop-row-get">
+        <label for="node-input-strongtype"><i class="fa fa-calendar-plus-o"></i> strongtype</label>
+        <select type="text" id="node-input-strongtype" style="width:72%;">
+	        <option value="use">- set by msg.strongtype -</option>
+	       	<option value="false">false</option>
+	       	<option value="true">true</option>
+		</select>
+    </div>
+    <div class="form-row node-prop-row-get">
+        <label for="node-input-compact"><i class="fa fa-file-archive-o"></i> compact</label>
+        <select type="text" id="node-input-compact" style="width:72%;">
+	        <option value="use">- set by msg.compact -</option>
+	       	<option value="false">false</option>
+	       	<option value="true">true</option>
+        </select>
+    </div>
 
-    <div class="form-row" id="node-prop-row-putpatch">
-        <label for="node-input-putpatch-computewithform"><i class="fa fa-calculator"></i> Compute WithForm</label>
-        <select type="text" id="node-input-putpatch-computewithform" style="width:72%;">
+    <div class="form-row node-prop-row-putpatch">
+        <label for="node-input-computewithform" style="width:140px"><i class="fa fa-calculator"></i> computewithform</label>
+        <select type="text" id="node-input-computewithform" style="width:64%;">
 	        <option value="use">- set by msg.computewithform -</option>
 	       	<option value="false">false</option>
 	       	<option value="true">true</option>
 		</select>
-   		<br/>
-   		<br/>
-	    <label for="node-input-putpatch-form"><i class="fa fa-file-text-o"></i> form</label>
-   	    <input type="text" id="node-input-putpatch-form" placeholder="e.g. MainTopic">
+    <div class="form-row node-prop-row-putpatch">
+    </div>
+	    <label for="node-input-form"><i class="fa fa-file-text-o"></i> form</label>
+   	    <input type="text" id="node-input-form" placeholder="e.g. MainTopic">
     </div>
     
     <div class="form-row">
@@ -105,8 +122,8 @@
 </script>
 
 <script type="text/x-red" data-help-name="document">
-    <p>Entries in a view or folder.</p>
-    <p>Provides a node for making http requests.(Domino REST API)</p>
+    <p>Document in a database.</p>
+    <p>Provides a node for making http requests.(Domino Access Services)</p>
     <ul>
         <li>Method</li>
         <ul>
@@ -115,24 +132,33 @@
     	    <li><code>PATCH</code>, Updates selected items in a document.</li>
     	    <li><code>DELETE</code>, Deletes a document.</li>
     	</ul>
-        <li><code>host</code> is the domino server.</li>
-        <li><code>database</code>, Path name of a database on the server. (e.g. mail/admin.nsf)</li>
-        <li>Method: GET</li>
+        <li><code>host</code> is a domino server.</li>
+        <li><code>database</code> is path name of a database on the server. (e.g. mail/admin.nsf)</li>
+        <li><code>docunid</code> is universalid of a document represented by an entry in the view or folder.</li>
+        <li>Query Parameters: GET</li>
         <ul>
-	        <li><code>hidden</code>, When true, emits supported Lotus Notes fields (beginning with $). (e.g. "$UpdatedBy":"CN=Administrator/O=Domino")</li>
-	        <li><code>markread</code>, When true, disables updating the read marks on the server.</li>
-	        <li><code>multipart</code>, When false, formats rich text as a single HTML part rather than multipart. The default value is true.</li>
+	        <li><code>hidden</code>, when true, support Lotus Notes fields. beginning with $. (e.g. "$UpdatedBy":"CN=administrator/O=domino")</li>
+	        <li><code>markread</code>, when true, disables updating the read marks on the server.</li>
+	        <li><code>multipart</code>, when false, formats rich text as a single HTML part rather than multipart. (default: true)</li>
+	        <li><code>strongtype</code> when true, displays date-time items as objects with type and data elements.</li>
+	        <li><code>compact</code> is controls compacting of the JSON output. Compacting removes extraneous white space. (Optional)</li>
         </ul>
         <li>Method: PUT, PATCH</li>
         <ul>
-	        <li><code>computewithform</code>, When true, runs the Domino form formulas against the request data before posting the data. You must identify the form. (true or false)</li>
-	        <li><code>form</code>, Associates a Domino form with the document.</li>
+	        <li><code>computewithform</code> is a option (true or false) to run the Domino form formulas against the request data before posting the data.  You must identify the form.</li>
+	        <li><code>form</code> is form name.</li>
 	    </ul>
     </ul>
     The output message contains the following properties:
     <ul>
         <li><code>payload</code> is the body of the response</li>
         <li><code>statusCode</code> is the status code of the response, or the error code if the request could not be completed</li>
+   	    <ul>
+	        <li><code>200</code> OK. Indicates that the request was handled successfully.</li>
+   	        <li><code>304</code> The document hasn't been modified since the date in the request's If-Modified-Since header.</li>
+	        <li><code>404</code> The specified document wasn't found.</li>
+	        <li><code>412</code> The data service won't return this status code unless the request includes If-Unmodified-Since header.</li>
+	    </ul>
         <li><code>headers</code> is an object containing the response headers</li>
     </ul>
 </script>
@@ -149,11 +175,13 @@
             host:{value:""},
             database:{value:""},
             docunid:{value:""},
+            compact:{value:"use"},
             hidden:{value:"use"},
             markread:{value:"use"},
             multipart:{value:"use"},
+            strongtype:{value:"use"},
             computewithform:{value:"use"},
-            form:{value:""},
+            form:{value:"use"}
             //user -> credentials
             //pass -> credentials
         },
@@ -193,33 +221,35 @@
 	            var v = $("#node-input-method option:selected").val();
 	            if (v === "GET") {
 					// show
-	                $("#node-prop-row-get").show();
-	                $("#node-input-get-hidden").focus();
+	                $(".node-prop-row-get").show();
                 	// reset
-	                $("#node-input-putpatch-computewithform").val("use");
-	                $("#node-input-putpatch-form").val("");
+	                $("#node-input-computewithform").val("use");
+	                $("#node-input-form").val("");
 					// hide
-	                $("#node-prop-row-put").hide();
+	                $(".node-prop-row-putpatch").hide();
                 } else if (v === "PATCH" || v === "PUT") {
 					// show
-	                $("#node-prop-row-putpatch").show();
-	                $("#node-input-putpatch-computewithform").focus();
+	                $(".node-prop-row-putpatch").show();
                 	// reset
-	                $("#node-input-get-hidden").val("use");
-	                $("#node-input-get-markread").val("use");
-	                $("#node-input-get-multipart").val("use");
+	                $("#node-input-compact").val("use");
+	                $("#node-input-hidden").val("use");
+	                $("#node-input-markread").val("use");
+	                $("#node-input-multipart").val("use");
+	                $("#node-input-strongtype").val("use");
 					// hide
-	                $("#node-prop-row-get").hide();
+	                $(".node-prop-row-get").hide();
                 } else if (v === "DELETE") {
                 	// rest
-	                $("#node-input-get-hidden").val("use");
-	                $("#node-input-get-markread").val("use");
-	                $("#node-input-get-multipart").val("use");
-	                $("#node-input-putpatch-computewithform").val("use");
-	                $("#node-input-putpatch-form").val("");
+	                $("#node-input-compact").val("use");
+	                $("#node-input-hidden").val("use");
+	                $("#node-input-markread").val("use");
+	                $("#node-input-multipart").val("use");
+	                $("#node-input-strongtype").val("use");
+	                $("#node-input-computewithform").val("use");
+	                $("#node-input-form").val("");
 					// hide
-	                $("#node-prop-row-get").hide();
-	                $("#node-prop-row-putpatch").hide();
+	                $(".node-prop-row-get").hide();
+	                $(".node-prop-row-putpatch").hide();
                 }
             });
         }

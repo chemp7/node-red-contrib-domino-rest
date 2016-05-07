@@ -18,8 +18,9 @@
 	Released under the MIT license
 	https://opensource.org/licenses/mit-license.php
 
-	This program has been created on the basis of the "http request node".
-	Added support for "Domino Access Services".
+	This program has been created on the basis of the http request node.
+	Added support for Domino Access Services.
+	This node tytpe is Document collection resource.
 -->
 
 <script type="text/x-red" data-template-name="document collection">
@@ -40,31 +41,40 @@
         <input type="text" id="node-input-database" placeholder="e.g. mail/admin.nsf">
     </div>
     
-    <div class="form-row" id="node-prop-row-get">
-	    <label for="node-input-get-search"><i class="fa fa-search"></i> Search</label>
-        <input type="text" id="node-input-get-search" placeholder="search keyword">
-   		<br/>
-   		<br/>
-	    <label for="node-input-get-searchmaxdocs"><i class="fa fa-files-o"></i> Max docs</label>
-        <input type="text" id="node-input-get-searchmaxdocs" placeholder="10">
-   		<br/>
-   		<br/>
-	    <label for="node-input-get-since"><i class="fa fa-calendar"></i> Since</label>
-        <input type="text" id="node-input-get-since" placeholder="e.g. 2016-05-21T01:02:03Z">
+    <div class="form-row node-prop-row-get">
+	    <label for="node-input-search"><i class="fa fa-search"></i> search</label>
+        <input type="text" id="node-input-search" placeholder="search keyword">
     </div>
-    <div class="form-row" id="node-prop-row-post">
-        <label for="node-input-post-computewithform"><i class="fa fa-calculator"></i> Compute WithForm</label>
-        <select type="text" id="node-input-post-computewithform" style="width:72%;">
+    <div class="form-row node-prop-row-get">
+	    <label for="node-input-searchmaxdocs"><i class="fa fa-files-o"></i> maxdocs</label>
+        <input type="text" id="node-input-searchmaxdocs" placeholder="10">
+    </div>
+    <div class="form-row node-prop-row-get">
+	    <label for="node-input-since"><i class="fa fa-calendar"></i> since</label>
+        <input type="text" id="node-input-since" placeholder="e.g. 2016-05-21T01:02:03Z">
+    </div>
+    <div class="form-row node-prop-row-get">
+        <label for="node-input-compact"><i class="fa fa-file-archive-o"></i> compact</label>
+        <select type="text" id="node-input-compact" style="width:72%;">
+	        <option value="use">- set by msg.compact -</option>
+	       	<option value="false">false</option>
+	       	<option value="true">true</option>
+        </select>
+    </div>
+
+    <div class="form-row node-prop-row-post">
+        <label for="node-input-post-computewithform" style="width:140px"><i class="fa fa-calculator"></i> computewithform</label>
+        <select type="text" id="node-input-post-computewithform" style="width:64%;">
         <option value="use">- set by msg.computewithform -</option>
        	<option value="false">false</option>
        	<option value="true">true</option>
 		</select>
-   		<br/>
-   		<br/>
+    </div>
+    <div class="form-row node-prop-row-post">
 	    <label for="node-input-post-form"><i class="fa fa-file-text-o"></i> form</label>
    	    <input type="text" id="node-input-post-form" placeholder="e.g. MainTopic">
-   		<br/>
-   		<br/>
+    </div>
+    <div class="form-row node-prop-row-post">
 	    <label for="node-input-post-parentid"><i class="fa fa-link"></i> parentid</label>
    	    <input type="text" id="node-input-post-parentid" placeholder="e.g. 6D971EDB3188CEDD49257FA40024524A">
     </div>
@@ -91,31 +101,36 @@
 
 <script type="text/x-red" data-help-name="document collection">
     <p>Documents in a database.</p>
-    <p>Provides a node for making http requests.(Domino REST API)</p>
+    <p>Provides a node for making http requests.(Domino Access Services)</p>
     <ul>
         <ul>
 	        <li><code>GET</code>, Gets information on the documents in a database.</li>
     	    <li><code>POST</code>, Adds a document to a database.</li>
     	</ul>
-        <li><code>host</code> is the domino server.</li>
-        <li><code>database</code>, Path name of a database on the server. (e.g. mail/admin.nsf)</li>
-        <li>Method: GET</li>
+        <li><code>host</code> is a domino server.</li>
+        <li><code>database</code> is path name of a database on the server. (e.g. mail/admin.nsf)</li>
+        <li>Query Parameters: GET</li>
         <ul>
-	        <li><code>search</code>, Returns only documents that match a search query.</li>
-	        <li><code>searchmaxdocs</code>, Limits the number of documents returned by a full-text search.</li>
+	        <li><code>search</code> is a query string. Returns only documents that match a search query.</li>
+	        <li><code>searchmaxdocs</code> is the max number of documents returned by a full-text search.</li>
 	        <li><code>since</code>, Returns only entries modified since a specified time. (e.g. 2016-05-21T01:02:03Z)</li>
+	        <li><code>compact</code> is controls compacting of the JSON output. Compacting removes extraneous white space. (Optional)</li>
         </ul>
-        <li>Method: POST</li>
+        <li>Query Parameters: POST</li>
         <ul>
-	        <li><code>computewithform</code>, When true, runs the Domino form formulas against the request data before posting the data. You must identify the form. (true or false)</li>
-	        <li><code>form</code>, Associates a Domino form with the document.</li>
-	        <li><code>parentid</code>, Adds the document as a response to the document specified by the parent UNID.</li>
+	        <li><code>computewithform</code> is a option (true or false) to run the Domino form formulas against the request data before posting the data. You must identify the form.</li>
+	        <li><code>form</code> is form name.</li>
+	        <li><code>parentid</code> is parent UNID. Adds the document as a response to the document specified.</li>
 	    </ul>
     </ul>
     The output message contains the following properties:
     <ul>
         <li><code>payload</code> is the body of the response</li>
         <li><code>statusCode</code> is the status code of the response, or the error code if the request could not be completed</li>
+   	    <ul>
+	        <li><code>200</code> OK. Indicates that the request was handled successfully.</li>
+   	        <li><code>201</code> OK. Indicates that the request was handled successfully. Returns a Location header with the URL of the new document.</li>
+	    </ul>
         <li><code>headers</code> is an object containing the response headers</li>
     </ul>
 </script>
@@ -131,12 +146,13 @@
 //            url:{value:""},
             host:{value:""},
             database:{value:""},
+            compact:{value:"use"},
             search:{value:""},
             searchmaxdocs:{value:""},
             since:{value:""},
             computewithform:{value:"use"},
             form:{value:""},
-            parentid:{value:""},
+            parentid:{value:""}
             //user -> credentials
             //pass -> credentials
         },
@@ -146,10 +162,8 @@
         },
         inputs:1,
         outputs:1,
-//        icon: "white-globe.png",
 		icon: "domino.png",
         label: function() {
-//            return this.name||this._("httpin.httpreq");
             return this.name||"document collection";
         },
         labelStyle: function() {
@@ -177,21 +191,20 @@
             $("#node-input-method").change(function() {
 	            var v = $("#node-input-method option:selected").val();
 	            if (v === "GET") {
-	                $("#node-prop-row-get").show();
-	                $("#node-input-get-search").focus();
+	                $(".node-prop-row-get").show();
 
 	                $("#node-input-post-computewithform").val("use");
-	                $("#node-input-post-form").val("");		//remove value
-	                $("#node-input-post-parentid").val("");		//remove value
-	                $("#node-prop-row-post").hide();
+	                $("#node-input-post-form").val("");
+	                $("#node-input-post-parentid").val("");
+	                $(".node-prop-row-post").hide();
                 } else if (v === "POST") {
-	                $("#node-prop-row-post").show();
-	                $("#node-input-post-computewithform").focus();
+	                $(".node-prop-row-post").show();
 
-	                $("#node-input-get-search").val("");	//remove value
-	                $("#node-input-get-searchmaxdocs").val("");	//remove value
-	                $("#node-input-get-since").val("");	//remove value
-	                $("#node-prop-row-get").hide();
+	                $("#node-input-compact").val("use");
+	                $("#node-input-search").val("");
+	                $("#node-input-searchmaxdocs").val("");
+	                $("#node-input-since").val("");
+	                $(".node-prop-row-get").hide();
                 }
             });
         }

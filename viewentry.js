@@ -37,25 +37,28 @@ module.exports = function(RED) {
 		var nodeUrl = "";
         var nodeHost = n.host;
         var nodeDatabase = n.database;
-        var nodeAccess = n.access || "use";
+        var nodeViewtype = n.viewtype || "use";
         var nodeViewname = n.viewname;
         var nodeViewunid = n.viewunid;
         var nodeDocunid = n.docunid;
+        var nodeComputewithform = n.computewithform || "use";
+        var nodeForm = n.form;
 //        var isTemplatedUrl = (nodeUrl||"").indexOf("{{") != -1;
         var nodeMethod = n.method || "PUT";
-//        var nodeMethod = "GET";
 //        this.ret = n.ret || "txt";
         this.ret = "txt";
         if (RED.settings.httpRequestTimeout) { this.reqTimeout = parseInt(RED.settings.httpRequestTimeout) || 120000; }
         else { this.reqTimeout = 120000; }
         var node = this;
 
-		log("host(node)", nodeHost);	//debug
-		log("db", nodeDatabase);	//debug
-		log("how to access", nodeAccess);	//debug
-		log("-> name", nodeViewname);	//debug
-		log("-> unid", nodeViewunid);	//debug
-		log("doc unid", nodeDocunid);	//debug
+		log("host", nodeHost);
+		log("database", nodeDatabase);
+		log("viewtype", nodeViewtype);
+		log("-> name", nodeViewname);
+		log("-> unid", nodeViewunid);
+		log("docunid", nodeDocunid);
+		log("--> computewithform", nodeComputewithform);
+		log("--> form", nodeForm);
 
         var prox, noprox;
         if (process.env.http_proxy != null) { prox = process.env.http_proxy; }
@@ -70,35 +73,55 @@ module.exports = function(RED) {
            
             var host = nodeHost || ((typeof msg.host === "undefined") ? "" : msg.host);
             var database = nodeDatabase || ((typeof msg.database === "undefined") ? "" : msg.database);
-            if (nodeAccess === "use"){
-	            var access = (typeof msg.access === "undefined") ? "" : msg.access;
+            if (nodeViewtype === "use"){
+	            var viewtype = (typeof msg.viewtype === "undefined") ? "" : msg.viewtype;
             } else {
-            	var access = nodeAccess;
+            	var viewtype = nodeViewtype;
         	}
             var viewname = nodeViewname || ((typeof msg.viewname === "undefined") ? "" : msg.viewname);
             var viewunid = nodeViewunid || ((typeof msg.viewunid === "undefined") ? "" : msg.viewunid);
             var docunid = nodeDocunid || ((typeof msg.docunid === "undefined") ? "" : msg.docunid);
+            if (nodeComputewithform === "use"){
+	            var computewithform = (typeof msg.computewithform === "undefined") ? "" : msg.computewithform;
+            } else {
+            	var computewithform = nodeComputewithform;
+        	}
+            var form = nodeForm || ((typeof msg.form === "undefined") ? "" : msg.form);
 
-			log("method", method);	//debug
-			log("host(node)", host);	//debug
-			log("db", database);	//debug
-			log("how to access", access);	//debug
-			log("-> name", viewname);	//debug
-			log("-> unid", viewunid);	//debug
-			log("doc unid", docunid);	//debug
+			log("method", method);
+			log("host", host);
+			log("database", database);
+			log("viewtype", viewtype);
+			log("-> name", viewname);
+			log("-> unid", viewunid);
+			log("docunid", docunid);
+			log("--> computewithform", computewithform);
+			log("--> form", form);
 
-            if (access === "unid") {
+            if (viewtype === "unid") {
            	    var opUri = "unid/" + viewunid;
             } else {
            	    var opUri = "name/" + viewname;
             }
+
+			var params = "";
+			if (method === "DELETE"){
+				node.ret = "txt";
+			} else if (method === "PUT" ) {
+				params = setParameter( params, "computewithform", computewithform.toString() );
+				params = setParameter( params, "form", form );
+				node.ret = "txt";
+			}
+			log("params", params);
+			log("node.ret", node.ret);
+			log("this.ret", node.ret);
 
             // Domino Access Services (REST API)
 			//{database}/api/data/collections/unid/{unid}/unid/{docunid}
 			//{database}/api/data/collections/name/{name}/unid/{docunid}
 			var baseUri= "api/data/collections"
             var url = encodeURI(setSlash( host ) + database + "/" + baseUri + "/" + opUri + "/unid/" + docunid);
-			log("url", url);	//debug
+			log("url", url);
 
             if (msg.url && nodeUrl && (nodeUrl !== msg.url)) {  // revert change below when warning is finally removed
                 node.warn(RED._("common.errors.nooverride"));
@@ -251,6 +274,16 @@ module.exports = function(RED) {
         }
     });
     
+  	function setParameter( params, n, v ){	//n:parameter name, v:parameter value
+        if (v !== "") {
+        	params = params + "&" + n + "=" + v;
+        }
+        if (params.slice(0,1) === "&") {
+        	params = "?" + params.slice(1);
+    	}
+        return params;
+	}
+	
     function setSlash ( str ){
     	if (str.length > 0) {
     		if ( str.slice(-1) === "/" ){

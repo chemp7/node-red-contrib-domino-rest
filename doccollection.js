@@ -37,6 +37,7 @@ module.exports = function(RED) {
 		var nodeUrl = "";
         var nodeHost = n.host;
         var nodeDatabase = n.database;
+        var nodeCompact = n.compact || "use";
         var nodeSearch = n.search;
         var nodeSearchmaxdocs = n.searchmaxdocs;
         var nodeSince = n.since;
@@ -51,14 +52,15 @@ module.exports = function(RED) {
         else { this.reqTimeout = 120000; }
         var node = this;
 
-		log("host(node)", nodeHost);	//debug
-		log("db", nodeDatabase);	//debug
-		log("--> search", nodeSearch);	//debug
-		log("--> search max docs", nodeSearchmaxdocs);	//debug
-		log("--> since", nodeSince);	//debug
-		log("--> computewithform", nodeComputewithform);	//debug
-		log("--> form", nodeForm);	//debug
-		log("--> parentid", nodeParentid);	//debug
+		log("host(node)", nodeHost);
+		log("database", nodeDatabase);
+		log("--> compact", nodeCompact);
+		log("--> search", nodeSearch);
+		log("--> searchmaxdocs", nodeSearchmaxdocs);
+		log("--> since", nodeSince);
+		log("--> computewithform", nodeComputewithform);
+		log("--> form", nodeForm);
+		log("--> parentid", nodeParentid);
 
         var prox, noprox;
         if (process.env.http_proxy != null) { prox = process.env.http_proxy; }
@@ -73,6 +75,11 @@ module.exports = function(RED) {
            
             var host = nodeHost || ((typeof msg.host === "undefined") ? "" : msg.host);
             var database = nodeDatabase || ((typeof msg.database === "undefined") ? "" : msg.database);
+            if (nodeCompact === "use"){
+	            var compact = (typeof msg.compact === "undefined") ? "" : msg.compact;
+            } else {
+            	var compact = nodeCompact;
+        	}
             var search = nodeSearch || ((typeof msg.search === "undefined") ? "" : msg.search);
             var searchmaxdocs = nodeSearchmaxdocs || ((typeof msg.searchmaxdocs === "undefined") ? "" : msg.searchmaxdocs);
             var since = nodeSince || ((typeof msg.since === "undefined") ? "" : msg.since);
@@ -84,17 +91,19 @@ module.exports = function(RED) {
             var form = nodeForm || ((typeof msg.form === "undefined") ? "" : msg.form);
             var parentid = nodeParentid || ((typeof msg.parentid === "undefined") ? "" : msg.parentid);
            
-         	log("host(node)", nodeHost);	//debug
-			log("db", database);	//debug
-			log("--> search", search);	//debug
-			log("--> search max docs", searchmaxdocs);	//debug
-			log("--> since", since);	//debug
-			log("--> computewithform", computewithform);	//debug
-			log("--> form", form);	//debug
-			log("--> parentid", parentid);	//debug
+         	log("host)", nodeHost);
+			log("database", database);
+			log("--> compact", compact);
+			log("--> search", search);
+			log("--> search max docs", searchmaxdocs);
+			log("--> since", since);
+			log("--> computewithform", computewithform);
+			log("--> form", form);
+			log("--> parentid", parentid);
 
 			var params = "";
 			if (method === "GET"){
+				params = setParameter( params, "compact", compact.toString() );
 				params = setParameter( params, "search", search );
 				params = setParameter( params, "searchmaxdocs", searchmaxdocs );
 				params = setParameter( params, "since", since );
@@ -105,14 +114,14 @@ module.exports = function(RED) {
 				params = setParameter( params, "parentid", parentid );
 				node.ret = "txt";
 			}
-			log("params", params);	//debug
-			log("node.ret", node.ret);	//debug
-			log("this.ret", node.ret);	//debug
+			log("params", params);
+			log("node.ret", node.ret);
+			log("this.ret", node.ret);
 
             // Domino REST API URL
             //{database}/api/data/documents
             var url = encodeURI(setSlash( host ) + database + "/api/data/documents" + params);
-			log("url", url);	//debug
+			log("url", url);
             
             if (msg.url && nodeUrl && (nodeUrl !== msg.url)) {  // revert change below when warning is finally removed
                 node.warn(RED._("common.errors.nooverride"));

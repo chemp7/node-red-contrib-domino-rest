@@ -18,16 +18,17 @@
 	Released under the MIT license
 	https://opensource.org/licenses/mit-license.php
 
-	This program has been created on the basis of the "http request node".
-	Added support for "Domino Access Services".
+	This program has been created on the basis of the http request node.
+	Added support for Domino Access Services.
+	This node tytpe is View/folder entry resource.
 -->
 
 <script type="text/x-red" data-template-name="view entry">
     <div class="form-row">
         <label for="node-input-method"><i class="fa fa-tasks"></i> <span data-i18n="httpin.label.method"></span></label>
         <select type="text" id="node-input-method" style="width:72%;">
-        <option value="PUT">PUT</option>
         <option value="DELETE">DELETE</option>
+        <option value="PUT">PUT</option>
         </select>
     </div>
 
@@ -41,9 +42,9 @@
     </div>
     
     <div class="form-row">
-        <label for="node-input-access"><i class="fa fa-folder"></i> How to Access</label>
-        <select type="text" id="node-input-access" style="width:72%;">
-        <option value="use">- set by msg.access -</option>
+        <label for="node-input-viewtype"><i class="fa fa-folder"></i> View type</label>
+        <select type="text" id="node-input-viewtype" style="width:72%;">
+        <option value="use">- set by msg.type -</option>
         <option value="name">name</option>
         <option value="unid">unid</option>
         </select>
@@ -60,6 +61,19 @@
     <div class="form-row">
 	    <label for="node-input-docunid"><i class="fa fa-link"></i> Doc unid</label>
    	    <input type="text" id="node-input-docunid" placeholder="e.g. 6D971EDB3188CEDD49257FA40024524A">
+    </div>
+
+    <div class="form-row node-prop-row-put">
+        <label for="node-input-computewithform"><i class="fa fa-calculator"></i> computewithform</label>
+        <select type="text" id="node-input-computewithform" style="width:72%;">
+        <option value="use">- set by msg.computewithform -</option>
+       	<option value="false">false</option>
+       	<option value="true">true</option>
+		</select>
+    </div>
+    <div class="form-row node-prop-row-put">
+	    <label for="node-input-form"><i class="fa fa-file-text-o"></i> form</label>
+   	    <input type="text" id="node-input-form" placeholder="e.g. MainTopic">
     </div>
 
     <div class="form-row">
@@ -83,22 +97,34 @@
 </script>
 
 <script type="text/x-red" data-help-name="view entry">
-    <p>Deletes a document from a database.</p>
-    <p>Provides a node for making http requests.(Domino REST API)</p>
+    <p>Entry in a view or folder.</p>
+    <p>Provides a node for making http requests.(Domino Access Services)</p>
     <ul>
-        <li><code>host</code> is the domino server.</li>
-        <li><code>database</code>, Path name of a database on the server. (e.g. mail/admin.nsf)</li>
-        <li><code>access</code>, how to access to the view. (name or unid)</li>
         <ul>
-	        <li><code>name</code>, Name or alias of a view or folder in the database.</li>
-	        <li><code>unid</code>, Universal ID of a view or folder in the database.</li>
+	        <li><code>DELETE</code>, Deletes a document from a database.</li>
+    	    <li><code>PUT</code>, Updates a document in a view or folder.</li>
+    	</ul>
+        <li><code>host</code> is a domino server.</li>
+        <li><code>database</code> is path name of a database on the server. (e.g. mail/admin.nsf)</li>
+        <li><code>viewtype</code>, Specify the "name" or "unid".</li>
+        <ul>
+	        <li><code>name</code> is name or alias of a view or folder in the database.</li>
+	        <li><code>unid</code> is universalid of a view or folder in the database.</li>
         </ul>
-        <li><code>docunid</code>, Universal ID of a document represented by an entry in the view or folder.</li>
+        <li><code>docunid</code> is universalid of a document represented by an entry in the view or folder.</li>
+        <li>Query Parameters: PUT</li>
+   	    <ul>
+	        <li><code>computewithform</code> is a option (true or false) to run the Domino form formulas against the request data before posting the data.  You must identify the form.</li>
+	        <li><code>form</code> is form name.</li>
+	    </ul>
     </ul>
     The output message contains the following properties:
     <ul>
         <li><code>payload</code> is the body of the response</li>
         <li><code>statusCode</code> is the status code of the response, or the error code if the request could not be completed</li>
+	    <ul>
+	        <li><code>200</code> OK. Indicates that the request was handled successfully.</li>
+	    </ul>
         <li><code>headers</code> is an object containing the response headers</li>
     </ul>
 </script>
@@ -114,10 +140,12 @@
 //            url:{value:""},
             host:{value:""},
             database:{value:""},
-            access:{value:"use"},
+            viewtype:{value:"use"},
             viewname:{value:""},
             viewunid:{value:""},
             docunid:{value:""},
+            computewithform:{value:"use"},
+            form:{value:""}
             //user -> credentials
             //pass -> credentials
         },
@@ -153,26 +181,36 @@
                 }
             });
 
-            $("#node-input-access").change(function() {
-	            var v = $("#node-input-access option:selected").val();
-	            console.log(v);
+            $("#node-input-viewtype").change(function() {
+	            var v = $("#node-input-viewtype option:selected").val();
 	            if (v === "name") {
 	                $("#node-prop-row-name").show();
 	                $("#node-input-viewname").focus();
 
-	                $("#node-input-viewunid").val("");	//remove value
+	                $("#node-input-viewunid").val("");
 	                $("#node-prop-row-unid").hide();
                 } else if (v === "unid") {
 	                $("#node-prop-row-unid").show();
 	                $("#node-input-viewunid").focus();
 
-	                $("#node-input-viewname").val("");	//remove value
+	                $("#node-input-viewname").val("");
 	                $("#node-prop-row-name").hide();
                 } else if (v === "use") {
-	                $("#node-input-viewname").val("");	//remove value
-	                $("#node-input-viewunid").val("");	//remove value
+	                $("#node-input-viewname").val("");
+	                $("#node-input-viewunid").val("");
 	                $("#node-prop-row-name").hide();
 	                $("#node-prop-row-unid").hide();
+                }
+            });
+
+            $("#node-input-method").change(function() {
+	            var v = $("#node-input-method option:selected").val();
+	            if (v === "PUT") {
+	                $(".node-prop-row-put").show();
+                } else if (v === "DELETE") {
+	                $("#node-input-computewithform").val("use");
+	                $("#node-input-form").val("");
+	                $(".node-prop-row-put").hide();
                 }
             });
         }

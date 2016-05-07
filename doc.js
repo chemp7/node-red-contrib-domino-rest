@@ -20,6 +20,7 @@
 
 	This program has been created on the basis of the "http request node".
 	Added support for "Domino Access Services".
+	Document in a database.
 **/
 
 module.exports = function(RED) {
@@ -38,29 +39,33 @@ module.exports = function(RED) {
         var nodeHost = n.host;
         var nodeDatabase = n.database;
         var nodeDocunid = n.docunid;
+        var nodeCompact = n.compact || "use";
         var nodeHidden = n.hidden || "use";
         var nodeMarkread = n.markread || "use";
         var nodeMultipart = n.multipart || "use";
+        var nodeStrongtype = n.strongtype || "use";
+        var nodeCompact = n.compact || "use";
         var nodeComputewithform = n.computewithform || "use";
         var nodeForm = n.form;
 //        var isTemplatedUrl = (nodeUrl||"").indexOf("{{") != -1;
         var nodeMethod = n.method || "GET";
-//        var nodeMethod = "GET";
 //        this.ret = n.ret || "txt";
         this.ret = "txt";
         if (RED.settings.httpRequestTimeout) { this.reqTimeout = parseInt(RED.settings.httpRequestTimeout) || 120000; }
         else { this.reqTimeout = 120000; }
         var node = this;
 
-		log("mothod", nodeMethod);	//debug
-		log("host(node)", nodeHost);	//debug
-		log("db", nodeDatabase);	//debug
-		log("doc unid", nodeDocunid);	//debug
-		log("--> hidden", nodeHidden);	//debug
-		log("--> markread", nodeMarkread);	//debug
-		log("--> multipart", nodeMultipart);	//debug
-		log("--> computewithform", nodeComputewithform);	//debug
-		log("--> form", nodeForm);	//debug
+		log("mothod", nodeMethod);
+		log("host", nodeHost);
+		log("database", nodeDatabase);
+		log("doc unid", nodeDocunid);
+		log("--> compact", nodeCompact);
+		log("--> hidden", nodeHidden);
+		log("--> markread", nodeMarkread);
+		log("--> multipart", nodeMultipart);
+		log("--> strongtype", nodeStrongtype);
+		log("--> computewithform", nodeComputewithform);
+		log("--> form", nodeForm);
 
         var prox, noprox;
         if (process.env.http_proxy != null) { prox = process.env.http_proxy; }
@@ -76,6 +81,11 @@ module.exports = function(RED) {
             var host = nodeHost || ((typeof msg.host === "undefined") ? "" : msg.host);
             var database = nodeDatabase || ((typeof msg.database === "undefined") ? "" : msg.database);
             var docunid = nodeDocunid || ((typeof msg.docunid === "undefined") ? "" : msg.docunid);
+            if (nodeCompact === "use"){
+	            var compact = (typeof msg.compact === "undefined") ? "" : msg.compact;
+            } else {
+            	var compact = nodeCompact;
+        	}
             if (nodeHidden === "use"){
 	            var hidden = (typeof msg.hidden === "undefined") ? "" : msg.hidden;
             } else {
@@ -91,6 +101,11 @@ module.exports = function(RED) {
             } else {
             	var multipart = nodeMultipart;
         	}
+            if (nodeStrongtype === "use"){
+	            var strongtype = (typeof msg.strongtype === "undefined") ? "" : msg.strongtype;
+            } else {
+            	var strongtype = nodeStrongtype;
+        	}
             if (nodeComputewithform === "use"){
 	            var computewithform = (typeof msg.computewithform === "undefined") ? "" : msg.computewithform;
             } else {
@@ -98,21 +113,25 @@ module.exports = function(RED) {
         	}
             var form = nodeForm || ((typeof msg.form === "undefined") ? "" : msg.form);
            
-         	log("method", method);	//debug
-         	log("host(node)", host);	//debug
-			log("db", database);	//debug
-			log("doc unid", docunid);	//debug
-			log("--> hidden", hidden);	//debug
-			log("--> markread", markread);	//debug
-			log("--> multipart", multipart);	//debug
-			log("--> computewithform", computewithform);	//debug
-			log("--> form", form);	//debug
+         	log("method", method);
+         	log("host(node)", host);
+			log("db", database);
+			log("doc unid", docunid);
+			log("--> compact", compact);
+			log("--> hidden", hidden);
+			log("--> markread", markread);
+			log("--> multipart", multipart);
+			log("--> strongtype", strongtype);
+			log("--> computewithform", computewithform);
+			log("--> form", form);
 
       		var params = "";
 			if (method === "GET"){
+				params = setParameter( params, "compact", compact.toString() );
 				params = setParameter( params, "hidden", hidden.toString() );
 				params = setParameter( params, "markread", markread.toString() );
 				params = setParameter( params, "multipart", multipart.toString() );
+				params = setParameter( params, "strongtype", strongtype.toString() );
 				node.ret = "obj";
 			} else if (method === "PUT" ) {
 				params = setParameter( params, "computewithform", computewithform.toString() );
@@ -123,15 +142,15 @@ module.exports = function(RED) {
 				params = setParameter( params, "form", form );
 				node.ret = "txt";
 			}
-			log("params", params);	//debug
-			log("node.ret", node.ret);	//debug
-			log("this.ret", node.ret);	//debug
+			log("params", params);
+			log("node.ret", node.ret);
+			log("this.ret", node.ret);
 
             // Domino Access Services (REST API)
 			//{database}/api/data/documents/unid/{docunid}
 			var baseUri= "api/data/documents/unid"
             var url = encodeURI(setSlash( host ) + database + "/" + baseUri + "/" + docunid + params);
-			log("url", url);	//debug
+			log("url", url);
 
             if (msg.url && nodeUrl && (nodeUrl !== msg.url)) {  // revert change below when warning is finally removed
                 node.warn(RED._("common.errors.nooverride"));

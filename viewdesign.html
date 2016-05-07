@@ -18,11 +18,19 @@
 	Released under the MIT license
 	https://opensource.org/licenses/mit-license.php
 
-	This program has been created on the basis of the "http request node".
-	Added support for "Domino Access Services".
+	This program has been created on the basis of the http request node.
+	Added support for Domino Access Services.
+	This node tytpe is View/folder design resource.
 -->
 
 <script type="text/x-red" data-template-name="view design">
+    <div class="form-row">
+        <label for="node-input-method"><i class="fa fa-tasks"></i> <span data-i18n="httpin.label.method"></span></label>
+        <select type="text" id="node-input-method" style="width:72%;">
+        <option value="GET">GET</option>
+        </select>
+    </div>
+
     <div class="form-row">
 	    <label for="node-input-host"><i class="fa fa-server"></i> Host</label>
         <input type="text" id="node-input-host" placeholder="e.g. http://mydominoserver.co.jp">
@@ -33,20 +41,29 @@
     </div>
 
     <div class="form-row">
-        <label for="node-input-access"><i class="fa fa-folder"></i> How to Access</label>
-        <select type="text" id="node-input-access" style="width:72%;">
-        <option value="use">- set by msg.access -</option>
+        <label for="node-input-viewtype"><i class="fa fa-folder"></i> View type</label>
+        <select type="text" id="node-input-viewtype" style="width:72%;">
+        <option value="use">- set by msg.type -</option>
         <option value="name">name</option>
         <option value="unid">unid</option>
         </select>
     </div>
-    <div class="form-row" id="node-prop-row-name">
+    <div class="form-row node-prop-row-name">
 	    <label for="node-input-viewname"><i class="fa fa-folder-o"></i> View name</label>
         <input type="text" id="node-input-viewname" placeholder="e.g. AuthorView">
     </div>
-    <div class="form-row" id="node-prop-row-unid">
+    <div class="form-row node-prop-row-unid">
 	    <label for="node-input-viewunid"><i class="fa fa-folder-o"></i> View unid</label>
         <input type="text" id="node-input-viewunid" placeholder="e.g. 10D5D34F073B8F0849257FA40041EF5C">
+    </div>
+
+    <div class="form-row node-prop-row-get">
+        <label for="node-input-compact"><i class="fa fa-file-archive-o"></i> compact</label>
+        <select type="text" id="node-input-compact" style="width:72%;">
+	        <option value="use">- set by msg.compact -</option>
+	       	<option value="false">false</option>
+	       	<option value="true">true</option>
+        </select>
     </div>
 
     <div class="form-row">
@@ -70,19 +87,31 @@
 </script>
 
 <script type="text/x-red" data-help-name="view design">
-    <p>Gets information on the columns in a view or folder.</p>
-    <p>Provides a node for making http requests.(Domino REST API)</p>
+    <p>Columns in a view or folder.</p>
+    <p>Provides a node for making http requests.(Domino Access Services)</p>
     <ul>
-        <li><code>host</code> is the domino server.</li>
-        <li><code>database</code>, Path name of a database on the server. (e.g. mail/admin.nsf)</li>
-        <li><code>access</code>, how to access to the view. (name or unid)</li>
-        <li><code>name</code>, Name or alias of a view or folder in the database.</li>
-        <li><code>unid</code>, Universal ID of a view or folder in the database.</li>
+        <ul>
+	        <li><code>GET</code>, Gets information on the columns in a view or folder.</li>
+    	</ul>
+        <li><code>host</code> is a domino server.</li>
+        <li><code>database</code> is path name of a database on the server. (e.g. mail/admin.nsf)</li>
+        <li><code>viewtype</code>, Specify the "name" or "unid".</li>
+        <ul>
+	        <li><code>name</code> is name or alias of a view or folder in the database.</li>
+	        <li><code>unid</code> is universalid of a view or folder in the database.</li>
+        </ul>
+        <li>Query Parameters: GET</li>
+   	    <ul>
+	        <li><code>compact</code> is controls compacting of the JSON output. Compacting removes extraneous white space. (Optional)</li>
+	    </ul>
     </ul>
     The output message contains the following properties:
     <ul>
         <li><code>payload</code> is the body of the response</li>
         <li><code>statusCode</code> is the status code of the response, or the error code if the request could not be completed</li>
+	    <ul>
+	        <li><code>200</code> OK. Indicates that the request was handled successfully.</li>
+	    </ul>
         <li><code>headers</code> is an object containing the response headers</li>
     </ul>
 </script>
@@ -93,14 +122,15 @@
         color:"rgb(12, 154, 190)",
         defaults: {
             name: {value:""},
-//            method:{value:"GET"},
+            method:{value:"GET"},
 //            ret: {value:"obj"},
 //            url:{value:""},
             host:{value:""},
             database:{value:""},
-            access:{value:"use"},
+            viewtype:{value:"use"},
             viewname:{value:""},
             viewunid:{value:""},
+            compact:{value:"use"},
             //user -> credentials
             //pass -> credentials
         },
@@ -136,26 +166,23 @@
                 }
             });
             
-            $("#node-input-access").change(function() {
-	            var v = $("#node-input-access option:selected").val();
-	            console.log(v);
+            $("#node-input-viewtype").change(function() {
+	            var v = $("#node-input-viewtype option:selected").val();
 	            if (v === "name") {
-	                $("#node-prop-row-name").show();
-	                $("#node-input-viewname").focus();
+	                $(".node-prop-row-name").show();
 
-	                $("#node-input-viewunid").val("");	//remove value
-	                $("#node-prop-row-unid").hide();
+	                $("#node-input-viewunid").val("");
+	                $(".node-prop-row-unid").hide();
                 } else if (v === "unid") {
-	                $("#node-prop-row-unid").show();
-	                $("#node-input-viewunid").focus();
+	                $(".node-prop-row-unid").show();
 
-	                $("#node-input-viewname").val("");	//remove value
-	                $("#node-prop-row-name").hide();
+	                $("#node-input-viewname").val("");
+	                $(".node-prop-row-name").hide();
                 } else if (v === "use") {
-	                $("#node-input-viewname").val("");	//remove value
-	                $("#node-input-viewunid").val("");	//remove value
-	                $("#node-prop-row-name").hide();
-	                $("#node-prop-row-unid").hide();
+	                $("#node-input-viewname").val("");
+	                $("#node-input-viewunid").val("");
+	                $(".node-prop-row-name").hide();
+	                $(".node-prop-row-unid").hide();
                 }
             });
         }

@@ -37,7 +37,7 @@ module.exports = function(RED) {
 		var nodeUrl = "";
         var nodeHost = n.host;
         var nodeDatabase = n.database;
-        var nodeAccess = n.access || "use";
+        var nodeViewtype = n.viewtype || "use";
         var nodeViewname = n.viewname;
         var nodeViewunid = n.viewunid;
         
@@ -57,6 +57,8 @@ module.exports = function(RED) {
         var nodeExpandlevel = n.expandlevel;
         var nodeCategory = n.category;
         var nodeSystemcolumns = n.systemcolumns;
+        var nodeCompact = n.compact;
+        var nodeEntrycount = n.entrycount;
         
         // Query Parameters: post
         var nodeComputewithform = n.computewithform || "use";
@@ -72,8 +74,8 @@ module.exports = function(RED) {
         var node = this;
 
 		log("host(node)", nodeHost);
-		log("db", nodeDatabase);
-		log("how to access", nodeAccess);
+		log("database", nodeDatabase);
+		log("viewtype", nodeViewtype);
 		log("-> name", nodeViewname);
 		log("-> unid", nodeViewunid);
 		log("--> search", nodeSearch);
@@ -91,6 +93,8 @@ module.exports = function(RED) {
 		log("--> expandlevel", nodeExpandlevel);
 		log("--> category", nodeCategory);
 		log("--> systemcolumns", nodeSystemcolumns);
+		log("--> compact", nodeCompact);
+		log("--> entrycount", nodeEntrycount);
 		log("--> computewithform", nodeComputewithform);
 		log("--> form", nodeForm);
 		log("--> parentid", nodeParentid);
@@ -108,10 +112,10 @@ module.exports = function(RED) {
            
             var host = nodeHost || ((typeof msg.host === "undefined") ? "" : msg.host);
             var database = nodeDatabase || ((typeof msg.database === "undefined") ? "" : msg.database);
-            if (nodeAccess === "use"){
-	            var access = (typeof msg.access === "undefined") ? "" : msg.access;
+            if (nodeViewtype === "use"){
+	            var viewtype = (typeof msg.viewtype === "undefined") ? "" : msg.viewtype;
             } else {
-            	var access = nodeAccess;
+            	var viewtype = nodeViewtype;
         	}
             var viewname = nodeViewname || ((typeof msg.viewname === "undefined") ? "" : msg.viewname);
             var viewunid = nodeViewunid || ((typeof msg.viewunid === "undefined") ? "" : msg.viewunid);
@@ -138,6 +142,17 @@ module.exports = function(RED) {
             var expandlevel = nodeExpandlevel || ((typeof msg.expandlevel === "undefined") ? "" : msg.expandlevel);
             var category = nodeCategory || ((typeof msg.category === "undefined") ? "" : msg.category);
             var systemcolumns = nodeSystemcolumns || ((typeof msg.systemcolumns === "undefined") ? "" : msg.systemcolumns);
+            
+            if (nodeCompact === "use"){
+	            var compact = (typeof msg.compact === "undefined") ? "" : msg.compact;
+            } else {
+            	var compact = nodeCompact;
+        	}
+            if (nodeEntrycount === "use"){
+	            var entrycount = (typeof msg.entrycount === "undefined") ? "" : msg.entrycount;
+            } else {
+            	var entrycount = nodeEntrycount;
+        	}
             if (nodeComputewithform === "use"){
 	            var computewithform = (typeof msg.computewithform === "undefined") ? "" : msg.computewithform;
             } else {
@@ -146,9 +161,9 @@ module.exports = function(RED) {
             var form = nodeForm || ((typeof msg.form === "undefined") ? "" : msg.form);
             var parentid = nodeParentid || ((typeof msg.parentid === "undefined") ? "" : msg.parentid);
            
-         	log("host(node)", nodeHost);
-			log("db", database);
-			log("how to access", access);
+         	log("host", nodeHost);
+			log("database", database);
+			log("viewtype", viewtype);
 			log("-> name", viewname);
 			log("-> unid", viewunid);
 			log("--> search", search);
@@ -166,11 +181,13 @@ module.exports = function(RED) {
 			log("--> expandlevel", expandlevel);
 			log("--> category", category);
 			log("--> systemcolumns", systemcolumns);
+			log("--> compact", compact);
+			log("--> entrycount", entrycount);
 			log("--> computewithform", computewithform);
 			log("--> form", form);
 			log("--> parentid", parentid);
 
-            if (access === "unid") {
+            if (viewtype === "unid") {
            	    var opUri = "unid/" + viewunid;
             } else {
            	    var opUri = "name/" + viewname;
@@ -194,6 +211,8 @@ module.exports = function(RED) {
 				params = setParameter( params, "category", category );
 				params = setParameter( params, "parentid", parentid );
 				params = setParameter( params, "systemcolumns", systemcolumns );
+				params = setParameter( params, "compact", compact );
+				params = setParameter( params, "entrycount", entrycount );
 				node.ret = "obj";
 			} else if (method === "POST" ) {
 				params = setParameter( params, "computewithform", computewithform.toString() );
@@ -203,16 +222,16 @@ module.exports = function(RED) {
 			} else if (method === "PUT" ) {
 				node.ret = "txt";
 			}
-			log("params", params);	//debug
-			log("node.ret", node.ret);	//debug
-			log("this.ret", node.ret);	//debug
+			log("params", params);
+			log("node.ret", node.ret);
+			log("this.ret", node.ret);
 
             // Domino Access Services (REST API)
 			//{database}/api/data/collections/unid/{unid}
 			//{database}/api/data/collections/name/{name}
 			var baseUri= "api/data/collections"
             var url = encodeURI(setSlash( host ) + database + "/" + baseUri + "/" + opUri + params);
-			log("url", url);	//debug
+			log("url", url);
 
             if (msg.url && nodeUrl && (nodeUrl !== msg.url)) {  // revert change below when warning is finally removed
                 node.warn(RED._("common.errors.nooverride"));

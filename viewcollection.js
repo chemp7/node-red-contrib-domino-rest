@@ -20,6 +20,7 @@
 
 	This program has been created on the basis of the "http request node".
 	Added support for "Domino Access Services".
+	Views and folders in a database.
 **/
 
 module.exports = function(RED) {
@@ -37,17 +38,19 @@ module.exports = function(RED) {
 		var nodeUrl = "";
         var nodeHost = n.host;
         var nodeDatabase = n.database;
+        var nodeCompact = n.compact || "use"
 //        var isTemplatedUrl = (nodeUrl||"").indexOf("{{") != -1;
-//        var nodeMethod = n.method || "GET";
-        var nodeMethod = "GET";
+        var nodeMethod = n.method || "GET";
 //        this.ret = n.ret || "txt";
         this.ret = "obj";
         if (RED.settings.httpRequestTimeout) { this.reqTimeout = parseInt(RED.settings.httpRequestTimeout) || 120000; }
         else { this.reqTimeout = 120000; }
         var node = this;
 
-		log("host(node)", nodeHost);	//debug
-		log("db", nodeDatabase);	//debug
+		log("method", nodeMethod);
+		log("host", nodeHost);
+		log("database", nodeDatabase);
+		log("--> compact", nodeCompact);
 
         var prox, noprox;
         if (process.env.http_proxy != null) { prox = process.env.http_proxy; }
@@ -62,15 +65,27 @@ module.exports = function(RED) {
            
             var host = nodeHost || ((typeof msg.host === "undefined") ? "" : msg.host);
             var database = nodeDatabase || ((typeof msg.database === "undefined") ? "" : msg.database);
+            if (nodeCompact === "use"){
+	            var compact = (typeof msg.compact === "undefined") ? "" : msg.compact;
+            } else {
+            	var compact = nodeCompact;
+        	}
 
-			log("host(node)", host);	//debug
-			log("db", database);	//debug
+			log("method", method);
+			log("host", host);
+			log("database", database);
+			log("--> compact", compact);
 
+      		var params = "";
+			if (method === "GET"){
+				params = setParameter( params, "compact", compact );
+			}
+			
             // Domino Access Services (REST API)
 			///{database}/api/data/collections
 			var baseUri= "api/data/collections"
-            var url = encodeURI(setSlash( host ) + database + "/" + baseUri);
-			log("url", url);	//debug
+            var url = encodeURI(setSlash( host ) + database + "/" + baseUri + params);
+			log("url", url);
 
             if (msg.url && nodeUrl && (nodeUrl !== msg.url)) {  // revert change below when warning is finally removed
                 node.warn(RED._("common.errors.nooverride"));
@@ -223,6 +238,16 @@ module.exports = function(RED) {
         }
     });
     
+	function setParameter( params, n, v ){	//n:parameter name, v:parameter value
+        if (v !== "") {
+        	params = params + "&" + n + "=" + v;
+        }
+        if (params.slice(0,1) === "&") {
+        	params = "?" + params.slice(1);
+    	}
+        return params;
+	}
+
     function setSlash ( str ){
     	if (str.length > 0) {
     		if ( str.slice(-1) === "/" ){

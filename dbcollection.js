@@ -20,6 +20,7 @@
 
 	This program has been created on the basis of the "http request node".
 	Added support for "Domino Access Services".
+	Databases on a Domino server.
 **/
 
 module.exports = function(RED) {
@@ -36,16 +37,18 @@ module.exports = function(RED) {
 //        var nodeUrl = n.url;
 		var nodeUrl = "";
         var nodeHost = n.host;
+        var nodeCompact = n.compact || "use"
 //        var isTemplatedUrl = (nodeUrl||"").indexOf("{{") != -1;
-//        var nodeMethod = n.method || "GET";
-        var nodeMethod = "GET";
+        var nodeMethod = n.method || "GET";
 //        this.ret = n.ret || "txt";
         this.ret = "obj";
         if (RED.settings.httpRequestTimeout) { this.reqTimeout = parseInt(RED.settings.httpRequestTimeout) || 120000; }
         else { this.reqTimeout = 120000; }
         var node = this;
 
-		log("host(node)", nodeHost);	//debug
+		log("method", nodeMethod);
+		log("host", nodeHost);
+		log("--> compact", nodeCompact);
 
         var prox, noprox;
         if (process.env.http_proxy != null) { prox = process.env.http_proxy; }
@@ -59,10 +62,26 @@ module.exports = function(RED) {
             var method = nodeMethod.toUpperCase() || "GET";
            
             var host = nodeHost || ((typeof msg.host === "undefined") ? "" : msg.host);
+            if (nodeCompact === "use"){
+	            var compact = (typeof msg.compact === "undefined") ? "" : msg.compact;
+            } else {
+            	var compact = nodeCompact;
+        	}
 
-            // Domino REST API URL
-            var url = encodeURI(setSlash( host ) + "api/data/");
-			log("url", url);	//debug
+			log("method", method);
+			log("host", host);
+			log("--> compact", compact);
+
+      		var params = "";
+			if (method === "GET"){
+				params = setParameter( params, "compact", compact );
+			}
+			
+            // Domino Access Services (REST API)
+			//	/api/data
+			var baseUri= "api/data/";
+            var url = encodeURI(setSlash( host ) + baseUri + params);
+			log("url", url);
 
             if (msg.url && nodeUrl && (nodeUrl !== msg.url)) {  // revert change below when warning is finally removed
                 node.warn(RED._("common.errors.nooverride"));
@@ -214,7 +233,17 @@ module.exports = function(RED) {
             password: {type: "password"}
         }
     });
-    
+
+	function setParameter( params, n, v ){	//n:parameter name, v:parameter value
+        if (v !== "") {
+        	params = params + "&" + n + "=" + v;
+        }
+        if (params.slice(0,1) === "&") {
+        	params = "?" + params.slice(1);
+    	}
+        return params;
+	}
+
     function setSlash ( str ){
     	if (str.length > 0) {
     		if ( str.slice(-1) === "/" ){
