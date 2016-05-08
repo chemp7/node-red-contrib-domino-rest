@@ -73,6 +73,7 @@
     <p>Gets information about the views and folders in a database.</p>
     <p>Provides a node for making http requests.(Domino Access Services)</p>
     <ul>
+        <li>Method</li>
         <ul>
 	        <li><code>GET</code>, Gets information about the views and folders in a database.</li>
     	</ul>
@@ -80,7 +81,7 @@
         <li><code>database</code>, Path name of a database on the server. (e.g. mail/admin.nsf)</li>
         <li>Query Parameters: GET</li>
 	    <ul>
-	        <li><code>compact</code> is controls compacting of the JSON output. Compacting removes extraneous white space. (Optional)</li>
+	        <li><code>compact</code> is controls compacting of the JSON output. Compacting removes extraneous white space. (Type: boolean, Optional: Yes)</li>
 	    </ul>
     </ul>
     The output message contains the following properties:

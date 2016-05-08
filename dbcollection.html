@@ -67,15 +67,16 @@
 
 <script type="text/x-red" data-help-name="database collection">
     <p>Databases on a Domino server.</p>
-    <p>Provides a node for making http requests.(Domino Access Services)</p>
+    <p>Provides a node for making http requests. (Domino Access Services)</p>
     <ul>
+        <li>Method</li>
         <ul>
 	        <li><code>GET</code>, Gets information about the databases on a Domino server.</li>
     	</ul>
-        <li><code>host</code> is a domino server</li>
+        <li><code>host</code> is a domino server.</li>
         <li>Query Parameters: GET</li>
 	    <ul>
-	        <li><code>compact</code> is controls compacting of the JSON output. Compacting removes extraneous white space. (Optional)</li>
+	        <li><code>compact</code> is controls compacting of the JSON output. Compacting removes extraneous white space. (Type: boolean, Optional: Yes)</li>
 	    </ul>
     </ul>
     The output message contains the following properties:

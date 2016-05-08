@@ -30,7 +30,7 @@ module.exports = function(RED) {
     var urllib = require("url");
     var mustache = require("mustache");
     var querystring = require("querystring");
-    var DEBUG = true;
+    var DEBUG = false;
 
     function HTTPRequest(n) {
         RED.nodes.createNode(this,n);
@@ -94,7 +94,7 @@ module.exports = function(RED) {
 
             if (viewtype === "unid") {
            	    var opUri = "unid/" + viewunid;
-            } else {
+            } else if (viewtype === "name") {
            	    var opUri = "name/" + viewname;
             }
        		var params = "";
@@ -109,6 +109,18 @@ module.exports = function(RED) {
             var url = encodeURI(setSlash( host ) + database + "/" + baseUri + "/" + opUri + "/design");
 			log("url", url);
 
+			if (host === "" || database === "" || viewtype === "" || (viewtype === "unid" && viewunid === "") || (viewtype === "name" && viewname === "") || (viewunid === "" && viewname === "")) {
+				var errorparam = "";
+				errorparam = (host === "") ? errorparam + " host," : errorparam;
+				errorparam = (database === "") ? errorparam + " database," : errorparam;
+				errorparam = (viewtype === "") ? errorparam + " viewtype," : errorparam;
+        		errorparam = (viewtype === "unid" && viewunid === "") ? errorparam + " viewunid," : errorparam;
+        		errorparam = (viewtype === "name" && viewname === "") ? errorparam + " viewname," : errorparam;
+				node.error("Parameter is missing:" + errorparam.substr(0, errorparam.length-1 ));
+				node.status({fill:"red",shape:"ring",text:"pamareter error"});
+				return;
+			}
+			
             if (msg.url && nodeUrl && (nodeUrl !== msg.url)) {  // revert change below when warning is finally removed
                 node.warn(RED._("common.errors.nooverride"));
             }
@@ -229,6 +241,15 @@ module.exports = function(RED) {
                         try { msg.payload = JSON.parse(msg.payload); }
                         catch(e) { node.warn(RED._("httpin.errors.json-error")); }
                     }
+
+					// Check statusCode
+					if (msg.statusCode >= 200 && msg.statusCode < 300) {
+						
+					} else {
+						node.warn("Response Status Code is " + msg.statusCode + ".");
+						node.status({fill:"yellow",shape:"ring",text:"statusCode warning"});
+					}
+					
                     node.send(msg);
                     node.status({});
                 });
@@ -278,6 +299,7 @@ module.exports = function(RED) {
     			return str + "/";
     		}
     	}
+    	return str;
 	}
 
     function log ( label, str ){

@@ -123,7 +123,7 @@
 
 <script type="text/x-red" data-help-name="document">
     <p>Document in a database.</p>
-    <p>Provides a node for making http requests.(Domino Access Services)</p>
+    <p>Provides a node for making http requests. (Domino Access Services)</p>
     <ul>
         <li>Method</li>
         <ul>
@@ -137,16 +137,16 @@
         <li><code>docunid</code> is universalid of a document represented by an entry in the view or folder.</li>
         <li>Query Parameters: GET</li>
         <ul>
-	        <li><code>hidden</code>, when true, support Lotus Notes fields. beginning with $. (e.g. "$UpdatedBy":"CN=administrator/O=domino")</li>
-	        <li><code>markread</code>, when true, disables updating the read marks on the server.</li>
-	        <li><code>multipart</code>, when false, formats rich text as a single HTML part rather than multipart. (default: true)</li>
-	        <li><code>strongtype</code> when true, displays date-time items as objects with type and data elements.</li>
-	        <li><code>compact</code> is controls compacting of the JSON output. Compacting removes extraneous white space. (Optional)</li>
+	        <li><code>hidden</code>, when true, support Lotus Notes fields. beginning with $. (e.g. "$UpdatedBy":"CN=administrator/O=domino") (Type: boolean, Optional: Yes)</li>
+	        <li><code>markread</code>, when true, disables updating the read marks on the server. (Type: boolean, Optional: Yes)</li>
+	        <li><code>multipart</code>, when false, formats rich text as a single HTML part rather than multipart. The default value is true. (Type:boolean, Optional: Yes) (9.0)</li>
+	        <li><code>strongtype</code>, when true, displays date-time items as objects with type and data elements. (Type: boolean, Optional: Yes)</li>
+	        <li><code>compact</code> is controls compacting of the JSON output. Compacting removes extraneous white space. (Type: boolean, Optional: Yes)</li>
         </ul>
         <li>Method: PUT, PATCH</li>
         <ul>
-	        <li><code>computewithform</code> is a option (true or false) to run the Domino form formulas against the request data before posting the data.  You must identify the form.</li>
-	        <li><code>form</code> is form name.</li>
+	        <li><code>computewithform</code> is a option to run the Domino form formulas against the request data before posting the data.  You must identify the form. (Type: boolean, Optional: Yes)</li>
+	        <li><code>form</code> is form name. (Type: string, Optional: Yes)</li>
 	    </ul>
     </ul>
     The output message contains the following properties:

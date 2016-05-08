@@ -43,8 +43,8 @@
     </div>
     
     <div class="form-row">
-        <label for="node-input-viewtype" style="width:140px"><i class="fa fa-folder"></i> View type</label>
-        <select type="text" id="node-input-viewtype" style="width:64%;">
+        <label for="node-input-viewtype"><i class="fa fa-folder"></i> View type</label>
+        <select type="text" id="node-input-viewtype" style="width:72%;">
 	        <option value="use">- set by msg.viewtype -</option>
 	        <option value="name">name</option>
 	        <option value="unid">unid</option>
@@ -160,8 +160,8 @@
 
 	<!-- -------------------------------------------  POST ------------------------------------------------------------- -->
     <div class="form-row node-prop-row-post">
-        <label for="node-input-computewithform"><i class="fa fa-calculator"></i> Compute WithForm</label>
-        <select type="text" id="node-input-computewithform" style="width:72%;">
+        <label for="node-input-computewithform" style="width:140px"><i class="fa fa-calculator"></i> computewithform</label>
+        <select type="text" id="node-input-computewithform" style="width:64%;">
 	        <option value="use">- set by msg.computewithform -</option>
 	       	<option value="false">false</option>
 	       	<option value="true">true</option>
@@ -202,12 +202,11 @@
     <p>Entries in a view or folder.</p>
     <p>Provides a node for making http requests.(Domino Access Services)</p>
     <ul>
+        <li>Method</li>
         <ul>
 	        <li><code>GET</code>, Gets information on the entries in a view or folder.</li>
     	    <li><code>POST</code>, Adds a document to a database limiting the content to that of the view/folder.</li>
     	    <li><code>PUT</code>, Updates the contents of a folder.</li>
-    	    Note: Request Fields Examples</br>
-    	    {"add":["73D21377422CEBC749257FA8001E23F0","F7F1EAC6BE35081C49257FA8001F4BE5"],{"remove":["60D78F074F7FD49F49257FA8001F50FC"]}
     	</ul>
         <li><code>host</code> is a domino server.</li>
         <li><code>database</code> is path name of a database on the server. (e.g. mail/admin.nsf)</li>
@@ -219,31 +218,38 @@
 
         <li>Query Parameters: GET</li>
         <ul>
-	        <li><code>search</code> is a query string. Returns only documents that match a search query.</li>
-	        <li><code>searchmaxdocs</code> is the max number of documents returned by a full-text search.</li>
-	        <li><code>start</code> is the starting entry. Default: 0 (the first entry)</li>
-	        <li><code>count</code> is the number of entries to return. Default: 10</li>
-	        <li><code>si</code> is the starting entry. Default: 0 (the first entry)</li>
-	        <li><code>ps</code> is the page size of entries to return.</li>
-	        <li><code>page</code> is the page number. Returns entries based on a multiple of this parameter and the ps (Page size) parameter.</li>
-	        <li><code>entrycount</code> default value is true. When false, disable the output of the Content-Range header as a performance optimization.</li>
-	        <li><code>sortcolumn</code> is the sort column. If the column is not sorted by design or does not exist, this parameter has no effect. e.g. Subject, Title, etc.</li>
-	        <li><code>sortorder</code> is the sort order. Pair this parameter with sortcolumn. (Value: "ascending" or "descending")</li>
-	        <li><code>startkeys</code> is a specified start entry. Pair this parameter with sortcolumn.</li>
-	        <li><code>keys</code> is characters match keys. Pair this parameter with sortcolumn.</li>
-	        <li><code>keysexactmatch</code> is option of keys. Use If you want to return entries that match keys exactly. Pair this parameter with keys.</li>
-	        <li><code>expandlevel</code> is the indent level. Returns only entries at a specified indent level or higher.</li>
-	        <li><code>category</code> is the category value. Returns only entries in a specified category.</li>
-	        <li><code>parentid</code> is parent UNID. Returns only entries that are descendants of the specified entry UNID.</li>
-	        <li><code>systemcolumns</code> is bit mask. Use hexadecimal or decimal. For example, When the systemcolumns is 0x80a, returns only the @entryid, @unid, @read, and @href.</li>
-	        <li><code>compact</code> is controls compacting of the JSON output. Compacting removes extraneous white space. (Optional)</li>
+	        <li><code>search</code> is a query string. Returns only documents that match a search query. (Type: string, Optional: Yes)</li>
+	        <li><code>searchmaxdocs</code> is the max number of documents returned by a full-text search. (Type: int, Optional: Yes)</li>
+	        <li><code>start</code> is the starting entry. Default: 0 (the first entry) (Type: int, Optional: Yes)</li>
+	        <li><code>count</code> is the number of entries to return. Defaults to 10. (Type: int, Optional: Yes)</li>
+	        <li><code>si</code> is the starting entry. Default: 0 (the first entry) (Type: int, Optional: Yes)</li>
+	        <li><code>ps</code> is the page size of entries to return. (Type: int, Optional: Yes)</li>
+	        <li><code>page</code> is the page number. Returns entries based on a multiple of this parameter and the ps (Page size) parameter. (Type: int, Optional: Yes)</li>
+	        <li><code>entrycount</code> default value is true. When false, disable the output of the Content-Range header as a performance optimization. (Type: boolean, Optional: Yes)</li>
+	        <li><code>sortcolumn</code> is the sort column. If the column is not sorted by design or does not exist, this parameter has no effect. e.g. Subject, Title, etc. (Type: string, Optional: Yes)</li>
+	        <li><code>sortorder</code> is the sort order. Pair this parameter with sortcolumn. (Type: string "ascending" or "descending", Optional: Yes)</li>
+	        <li><code>startkeys</code> is a specified start entry. Pair this parameter with sortcolumn. (Type: string, Optional: Yes)</li>
+	        <li><code>keys</code> is characters match keys. Pair this parameter with sortcolumn. (Type: string, Optional: Yes)</li>
+	        <li><code>keysexactmatch</code> is option of keys. Use If you want to return entries that match keys exactly. Pair this parameter with keys. (Type: string, Optional: Yes)</li>
+	        <li><code>expandlevel</code> is the indent level. Returns only entries at a specified indent level or higher. (Type: int, Optional: Yes)</li>
+	        <li><code>category</code> is the category value. Returns only entries in a specified category. (Type: string, Optional: Yes)</li>
+	        <li><code>parentid</code> is parent UNID. Returns only entries that are descendants of the specified entry UNID. (Type: string, Optional: Yes)</li>
+	        <li><code>systemcolumns</code> is bit mask. Use hexadecimal or decimal. For example, When the systemcolumns is 0x80a, returns only the @entryid, @unid, @read, and @href. (Type: int, Optional: Yes) (9.0)</li>
+	        <li><code>compact</code> is controls compacting of the JSON output. Compacting removes extraneous white space. (Type: boolean, Optional: Yes)</li>
         </ul>
         <li>Query Parameters: POST</li>
         <ul>
-	        <li><code>computewithform</code> is a option (true or false) to run the Domino form formulas against the request data before posting the data. You must identify the form.</li>
-	        <li><code>form</code> is form name.</li>
-	        <li><code>parentid</code> is parent UNID. Adds the document as a response to the document specified.</li>
+	        <li><code>computewithform</code> is a option to run the Domino form formulas against the request data before posting the data. You must identify the form. (Type: boolean, Optional: Yes)</li>
+	        <li><code>form</code> is form name. (Type: string, Optional: Yes)</li>
+	        <li><code>parentid</code> is parent UNID. Adds the document as a response to the document specified. (Type: string, Optional: Yes)</li>
 	    </ul>
+   	    <li>Request Fields: PUT</li>
+	    <ul>
+    	    <li><code>add</code> is array of universal IDs of documents to add to the folder.</li>
+	    	<li><code>removed</code> is array of universal IDs of documents to remove from the folder.</li>
+   	        <li>Examples</li>
+    	    <p>{"add":["73D21377422CEBC749257FA8001E23F0","F7F1EAC6BE35081C49257FA8001F4BE5"],{"remove":["60D78F074F7FD49F49257FA8001F50FC"]}</p>
+    	</ul>
     </ul>
     The output message contains the following properties:
     <ul>
@@ -476,9 +482,7 @@
 	                $("#node-input-compact").val("use");	//g17
 	                $("#node-input-entrycount").val("use");	//g18
 					// parentid
-		            if (v === "GET" || v === "POST") {
-			            // Not reset
-		            } else {
+		            if (v !== "POST") {
 		                $("#node-input-parentid").val("");	//p3, g15
 		            }
             	}
@@ -486,9 +490,8 @@
             		// POST
 					$("#node-input-computewithform").val("use");//p1
 	                $("#node-input-form").val("");				//p2
-	                
 					// parentid
-		            if (v === "GET" || v === "POST") {
+		            if (v === "GET" || v == "POST") {
 			            // Not reset
 			            if ($("#node-input-getparam3").val() === "collapse") {
 			                $("#node-input-parentid").val("");		//p3, g15

@@ -63,20 +63,20 @@
     </div>
 
     <div class="form-row node-prop-row-post">
-        <label for="node-input-post-computewithform" style="width:140px"><i class="fa fa-calculator"></i> computewithform</label>
-        <select type="text" id="node-input-post-computewithform" style="width:64%;">
+        <label for="node-input-computewithform" style="width:140px"><i class="fa fa-calculator"></i> computewithform</label>
+        <select type="text" id="node-input-computewithform" style="width:64%;">
         <option value="use">- set by msg.computewithform -</option>
        	<option value="false">false</option>
        	<option value="true">true</option>
 		</select>
     </div>
     <div class="form-row node-prop-row-post">
-	    <label for="node-input-post-form"><i class="fa fa-file-text-o"></i> form</label>
-   	    <input type="text" id="node-input-post-form" placeholder="e.g. MainTopic">
+	    <label for="node-input-form"><i class="fa fa-file-text-o"></i> form</label>
+   	    <input type="text" id="node-input-form" placeholder="e.g. MainTopic">
     </div>
     <div class="form-row node-prop-row-post">
-	    <label for="node-input-post-parentid"><i class="fa fa-link"></i> parentid</label>
-   	    <input type="text" id="node-input-post-parentid" placeholder="e.g. 6D971EDB3188CEDD49257FA40024524A">
+	    <label for="node-input-parentid"><i class="fa fa-link"></i> parentid</label>
+   	    <input type="text" id="node-input-parentid" placeholder="e.g. 6D971EDB3188CEDD49257FA40024524A">
     </div>
     
     <div class="form-row">
@@ -103,6 +103,7 @@
     <p>Documents in a database.</p>
     <p>Provides a node for making http requests.(Domino Access Services)</p>
     <ul>
+        <li>Method</li>
         <ul>
 	        <li><code>GET</code>, Gets information on the documents in a database.</li>
     	    <li><code>POST</code>, Adds a document to a database.</li>
@@ -111,16 +112,16 @@
         <li><code>database</code> is path name of a database on the server. (e.g. mail/admin.nsf)</li>
         <li>Query Parameters: GET</li>
         <ul>
-	        <li><code>search</code> is a query string. Returns only documents that match a search query.</li>
-	        <li><code>searchmaxdocs</code> is the max number of documents returned by a full-text search.</li>
-	        <li><code>since</code>, Returns only entries modified since a specified time. (e.g. 2016-05-21T01:02:03Z)</li>
-	        <li><code>compact</code> is controls compacting of the JSON output. Compacting removes extraneous white space. (Optional)</li>
+	        <li><code>search</code> is a query string. Returns only documents that match a search query. (Type: string, Optional: Yes)</li>
+	        <li><code>searchmaxdocs</code> is the max number of documents returned by a full-text search. (Type: int, Optional: Yes)</li>
+	        <li><code>since</code>, Returns only entries modified since a specified time. (e.g. 2016-05-21T01:02:03Z) (Type: string, Optional: Yes)</li>
+	        <li><code>compact</code> is controls compacting of the JSON output. Compacting removes extraneous white space. (Type: boolean, Optional: Yes)</li>
         </ul>
         <li>Query Parameters: POST</li>
         <ul>
-	        <li><code>computewithform</code> is a option (true or false) to run the Domino form formulas against the request data before posting the data. You must identify the form.</li>
-	        <li><code>form</code> is form name.</li>
-	        <li><code>parentid</code> is parent UNID. Adds the document as a response to the document specified.</li>
+	        <li><code>computewithform</code> is a option to run the Domino form formulas against the request data before posting the data. You must identify the form. (Type: boolean, Optional: Yes)</li>
+	        <li><code>form</code> is form name. (Type: string, Optional: Yes)</li>
+	        <li><code>parentid</code> is parent UNID. Adds the document as a response to the document specified.  (Type: string, Optional: Yes)</li>
 	    </ul>
     </ul>
     The output message contains the following properties:
@@ -193,9 +194,9 @@
 	            if (v === "GET") {
 	                $(".node-prop-row-get").show();
 
-	                $("#node-input-post-computewithform").val("use");
-	                $("#node-input-post-form").val("");
-	                $("#node-input-post-parentid").val("");
+	                $("#node-input-computewithform").val("use");
+	                $("#node-input-form").val("");
+	                $("#node-input-parentid").val("");
 	                $(".node-prop-row-post").hide();
                 } else if (v === "POST") {
 	                $(".node-prop-row-post").show();

@@ -64,8 +64,8 @@
     </div>
 
     <div class="form-row node-prop-row-put">
-        <label for="node-input-computewithform"><i class="fa fa-calculator"></i> computewithform</label>
-        <select type="text" id="node-input-computewithform" style="width:72%;">
+        <label for="node-input-computewithform" style="width:140px"><i class="fa fa-calculator"></i> computewithform</label>
+        <select type="text" id="node-input-computewithform" style="width:64%;">
         <option value="use">- set by msg.computewithform -</option>
        	<option value="false">false</option>
        	<option value="true">true</option>
@@ -100,6 +100,7 @@
     <p>Entry in a view or folder.</p>
     <p>Provides a node for making http requests.(Domino Access Services)</p>
     <ul>
+        <li>Method</li>
         <ul>
 	        <li><code>DELETE</code>, Deletes a document from a database.</li>
     	    <li><code>PUT</code>, Updates a document in a view or folder.</li>
@@ -114,8 +115,8 @@
         <li><code>docunid</code> is universalid of a document represented by an entry in the view or folder.</li>
         <li>Query Parameters: PUT</li>
    	    <ul>
-	        <li><code>computewithform</code> is a option (true or false) to run the Domino form formulas against the request data before posting the data.  You must identify the form.</li>
-	        <li><code>form</code> is form name.</li>
+	        <li><code>computewithform</code> is a option to run the Domino form formulas against the request data before posting the data.  You must identify the form. (Type: boolean, Optional: Yes)</li>
+	        <li><code>form</code> is form name. (Type: string, Optional: Yes)</li>
 	    </ul>
     </ul>
     The output message contains the following properties:
