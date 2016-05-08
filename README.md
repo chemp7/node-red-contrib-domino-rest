@@ -38,7 +38,7 @@ It is possible to access easy to Domino Access Services by use by the node that 
 
 **Note**
 
-* Overriding Method can not be. (Msg.method)
+* msg.method can not overrid.
 
 
 ## Chart
