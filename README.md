@@ -47,7 +47,7 @@ It is possible to access easy to Domino Access Services by use by the node that 
 
 ## Install
 
-        npm install -g node-red-contrib-domino-rest
+        npm install node-red-contrib-domino-rest
 
 
 ## Licence
