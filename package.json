@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-domino-rest",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "This collection of Node-RED nodes is for Domino Data Services in Domino Access Services.",
   "author": "Takeshi Yoshida",
   "license": "MIT",
