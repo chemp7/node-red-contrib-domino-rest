@@ -47,6 +47,8 @@ It is possible to access easy to Domino Access Services by use by the node that 
 
 ## Install
 
+Run the following command in the root directory of your Node-RED install.
+
         npm install node-red-contrib-domino-rest
 
 
@@ -67,4 +69,5 @@ The httprequest Node is released under the Apache License Version 2.0.
 ## Releace
 
 2016/05/08 v0.0.3
+2016/05/09 v0.0.4
 

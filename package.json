@@ -9,10 +9,6 @@
     "type": "git",
     "url": "git+https://github.com/chemp7/node-red-contrib-domino-rest.git"
   },
-  "keywords": [
-    "node-red",
-    "domino"
-  ],
   "node-red": {
      "nodes": {
         "das db collection": "dbcollection.js",
