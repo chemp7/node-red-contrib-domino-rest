@@ -47,7 +47,8 @@ It is possible to access easy to Domino Access Services by use by the node that 
 
 ## Install
 
-Run the following command in the root directory of your Node-RED install.
+Move to the nodes directory under your Node-RED install.
+Run the following command.
 
         npm install node-red-contrib-domino-rest
 
