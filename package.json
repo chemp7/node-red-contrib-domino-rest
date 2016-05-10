@@ -3,6 +3,9 @@
   "version": "0.0.6",
   "description": "This collection of Node-RED nodes is for Domino Data Services in Domino Access Services.",
   "author": "Takeshi Yoshida",
+  "bugs": {
+    "url": "https://github.com/chemp7/node-red-contrib-domino-rest/issues"
+  },
   "license": "MIT",
   "homepage": "https://github.com/chemp7/node-red-contrib-domino-rest#readme",
   "repository": {
