@@ -25,7 +25,7 @@
 
 <script type="text/x-red" data-template-name="database collection">
     <div class="form-row">
-        <label for="node-input-method"><i class="fa fa-tasks"></i> <span data-i18n="httpin.label.method"></span></label>
+        <label for="node-input-method"><i class="fa fa-tasks"></i> Method</label>
         <select type="text" id="node-input-method" style="width:72%;">
         <option value="GET">GET</option>
         </select>
@@ -48,21 +48,21 @@
     <div class="form-row">
         <label>&nbsp;</label>
         <input type="checkbox" id="node-input-useAuth" style="display: inline-block; width: auto; vertical-align: top;">
-        <label for="node-input-useAuth" style="width: 70%;"><span data-i18n="httpin.basicauth"></span></label>
+        <label for="node-input-useAuth" style="width: 70%;">Use basic authentication?</label>
     </div>
     <div class="form-row node-input-useAuth-row">
-        <label for="node-input-user"><i class="fa fa-user"></i> <span data-i18n="common.label.username"></span></label>
+        <label for="node-input-user"><i class="fa fa-user"></i> Username</label>
         <input type="text" id="node-input-user">
     </div>
     <div class="form-row node-input-useAuth-row">
-        <label for="node-input-password"><i class="fa fa-lock"></i> <span data-i18n="common.label.password"></span></label>
+        <label for="node-input-password"><i class="fa fa-lock"></i> Password</label>
         <input type="password" id="node-input-password">
     </div>
     <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="common.label.name"></span></label>
-        <input type="text" id="node-input-name" data-i18n="[placeholder]common.label.name">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
     </div>
-    <div class="form-tips" id="tip-json" hidden><span data-i18n="httpin.tip.req"></span></div>
+    <div class="form-tips" id="tip-json" hidden>Tip: If the JSON parse fails the fetched string is returned as-is.</div>
 </script>
 
 <script type="text/x-red" data-help-name="database collection">

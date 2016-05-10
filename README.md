@@ -69,6 +69,7 @@ The httprequest Node is released under the Apache License Version 2.0.
 
 ## Releace
 
-2016/05/08 v0.0.3
+2016/05/10 v0.0.5
 2016/05/09 v0.0.4
+2016/05/08 v0.0.3
 
