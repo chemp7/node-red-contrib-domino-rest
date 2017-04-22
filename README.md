@@ -13,28 +13,46 @@ This package is created by modifying the http request Node.
 This packeage added support to Domino Data Service in Domino Access Services.
 It is possible to access easy to Domino Access Services by use by the node that is included in this package.
 
-**Node**
+
+## Node
+
+**Domino data service**
 
 * Database collection node
-  - This node is possible to access to the **Database collection resouce**.
+  - This node is possible to access to **the database collection resouce**.
 
 * Document node
-  - This node is possible to access to the **Document resouce**.
+  - This node is possible to access to **the document resouce**.
 
 * Document collection node
-  - This node is possible to access to the **Document collection resouce**.
+  - This node is possible to access to **the document collection resouce**.
 
 * View/folder collection node
-  - This node is possible to access to the **View/folder collection resouce**.
+  - This node is possible to access to **the view/folder collection resouce**.
 
 * View/folder design node
-  - This node is possible to access to the **View/folder design resouce**.
+  - This node is possible to access to **the view/folder design resouce**.
 
 * View/folder entries node
-  - This node is possible to access to the **View/folder entries resouce**.
+  - This node is possible to access to **the view/folder entries resouce**.
 
 * View/folder entry node
-  - This node is possible to access to the **View/folder entry resouce**.
+  - This node is possible to access to **the view/folder entry resouce**.
+
+**Domino core service**
+
+* Services node
+  - This node is possible to access to **the list of services installed**.
+
+* Core resources node
+  - This node is possible to access to **the list of resources**.
+
+* Nonce node
+  - This node is possible to access to **a token to be used in subsequent requests for CSRF protection**.
+
+* Password statistics node
+  - This node is possible to access to **the password statistics**.
+
 
 **Note**
 
@@ -67,6 +85,8 @@ The httprequest Node is released under the Apache License Version 2.0.
 
 
 ## Releace
+
+2017/04/22 v0.0.8 Added node for Domino core service
 
 2016/08/28 v0.0.7 Typographical error fix
 

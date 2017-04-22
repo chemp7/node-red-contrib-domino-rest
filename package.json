@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-domino-rest",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "This collection of Node-RED nodes is for Domino Data Services in Domino Access Services.",
   "author": "Takeshi Yoshida",
   "bugs": {
@@ -21,7 +21,11 @@
         "das-view-collection": "viewcollection.js",
         "das-view-design": "viewdesign.js",
         "das-view-entries": "viewentries.js",
-        "das-view-entry": "viewentry.js"
+        "das-view-entry": "viewentry.js",
+        "das-core-services": "core_services.js",
+        "das-core-core-resources": "core_coreresources.js",
+        "das-core-nonce": "core_nonce.js",
+        "das-core-password-statistics": "core_passwordstatistics.js"
      }
   },
   "dependencies": {
