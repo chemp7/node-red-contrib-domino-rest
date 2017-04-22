@@ -60,7 +60,7 @@ It is possible to access easy to Domino Access Services by use by the node that 
 
 
 ## Chart
-![Chart] (https://github.com/chemp7/node-red-contrib-domino-rest/blob/master/image/node-red-contrib-domino-rest.png)
+![Chart](https://github.com/chemp7/node-red-contrib-domino-rest/blob/master/image/node-red-contrib-domino-rest.png)
 
 
 ## Install
