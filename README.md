@@ -53,7 +53,6 @@ It is possible to access easy to Domino Access Services by use by the node that 
 * Password statistics node
   - This node is possible to access to **the password statistics**.
 
-
 **Note**
 
 * msg.method can not overrid.
